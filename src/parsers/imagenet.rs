@@ -56,4 +56,8 @@ impl Ann {
         
         Ok(ann.into())
     }
+
+    pub fn from_pascal_voc(path: &str) -> Result<Ann, ParseErr> {
+        Ann::from_imagenet(path)
+    }
 }
