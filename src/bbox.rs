@@ -1,18 +1,16 @@
 use crate::imgsize::*;
 use crate::coords::*;
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct BBox {
-    pub label: String,  // Use SmallString or immutable to optimize storage?
-    xmin: f32,
-    ymin: f32,
-    xmax: f32,
-    ymax: f32,
+    pub label: String,
+    xmin: f32, ymin: f32,
+    xmax: f32, ymax: f32,
     conf: Option<f32>,
 }
 
 impl BBox {
-    pub fn new(label: &str, xmin: f32, ymin: f32, xmax: f32, ymax: f32, conf: Option<f32>) -> Self {
+    pub fn new(label: String, xmin: f32, ymin: f32, xmax: f32, ymax: f32, conf: Option<f32>) -> Self {
         assert!(xmin <= xmax);
         assert!(ymin <= ymax);
         
@@ -20,7 +18,7 @@ impl BBox {
             assert!(0.0 <= conf && conf <= 1.0);
         }
 
-        Self { label: String::from(label), xmin, ymin, xmax, ymax, conf }
+        Self { label, xmin, ymin, xmax, ymax, conf }
     }
 }
 
@@ -62,7 +60,7 @@ pub enum BBoxFmt {
 
 impl BBox {
     pub fn create(
-        label: &str, 
+        label: String, 
         coords: Coords, 
         fmt: BBoxFmt, 
         conf: Option<f32>, 
@@ -77,7 +75,7 @@ impl BBox {
     }
 
     pub fn create_rel(
-        label: &str, 
+        label: String, 
         coords: Coords, 
         fmt: BBoxFmt, 
         conf: Option<f32>,
@@ -94,7 +92,7 @@ mod tests {
 
     #[test]
     fn test_creation() {
-        let b = BBox::new("label", 10.0, 20.0, 30.0, 40.0, Some(0.25));
+        let b = BBox::new("label".to_owned(), 10.0, 20.0, 30.0, 40.0, Some(0.25));
         
         assert_eq!(b.xmin(), 10.0);
         assert_eq!(b.ymin(), 20.0);
