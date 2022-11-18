@@ -15,7 +15,7 @@ fn parse_cvat(path: &str) -> Result<AnnSet, ParseErr> {
 
     loop {
         match reader.read_event_into(&mut buf) {
-            Err(e) => return Err(ParseErr {}),
+            Err(_) => return Err(ParseErr {}),
             
             Ok(Event::Eof) => break,
 
@@ -36,7 +36,10 @@ fn parse_cvat(path: &str) -> Result<AnnSet, ParseErr> {
                             .collect::<HashMap<_, _>>();
                             // .collect::<Result<Vec<_>, _>>()
                             // .map_err(|_| ParseErr {})?;
+                        todo!();
                     },
+
+                    _ => (),
                 }
             },
 
@@ -49,11 +52,15 @@ fn parse_cvat(path: &str) -> Result<AnnSet, ParseErr> {
 
                     anns.reserve(size);
 
-                    in_size = false
+                    in_size = false;
                 }
-            }
+            },
+
+            _ => (),
         }
 
         buf.clear();
     }
+
+    Ok(anns)
 }
