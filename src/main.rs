@@ -1,8 +1,8 @@
-use globox::annotation::Ann;
+use globox::{annotation::Ann, annotationset::AnnSet};
 
 fn main() {
-    let path = "/Users/louislac/Documents/Developer/Python/globox/tests/globox_test_data/gts/labelme_format/2007_000032.json";
+    let path = "/Users/louislac/Documents/Developer/Python/globox/tests/globox_test_data/gts/cvat_format/annotations.xml";
 
-    let ann = Ann::from_labelme(path).unwrap();
+    let ann = AnnSet::parse_cvat(path).unwrap();
     println!("{:?}", ann);
 }

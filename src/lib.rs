@@ -5,6 +5,6 @@ pub mod bbox;
 pub mod annotation;
 pub mod annotationset;
 
-mod parsers;
-mod converters;
-mod evaluator;
+pub mod parsers;
+pub mod converters;
+pub mod evaluator;
