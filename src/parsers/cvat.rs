@@ -32,6 +32,7 @@ fn get_string(attrs: &HashMap<QName, Result<Cow<str>, quick_xml::Error>>, name: 
     Ok(string)
 }
 
+// TODO: Use HashMap.many_[mut] to obtain all requested values.
 fn as_hash_map(attributes: Attributes) -> HashMap<QName, Result<Cow<str>, quick_xml::Error>> {
     attributes
         .filter_map(|a| {

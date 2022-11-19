@@ -1,4 +1,4 @@
-use std::collections::{HashMap, hash_map};
+use std::collections::{HashMap};
 use crate::annotation::*;
 
 #[derive(Debug, Clone)]
