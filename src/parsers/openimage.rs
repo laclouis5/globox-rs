@@ -1,3 +1,5 @@
+use std::collections::hash_map::Entry;
+
 use crate::{parsers::ParseErr, annotation::Ann, annotationset::AnnSet, bbox::BBox};
 
 use csv;
@@ -47,10 +49,11 @@ impl AnnSet {
             let line: OALine = line.map_err(|_| ParseErr {})?;
             let (image_id, bbox) = line.img_id_and_bbox();
             
+            // Could avoid to always String.clone() even if key present.
             annset.items
                 .entry(image_id.clone())
-                .or_insert(Ann::new(image_id, None, vec![]))
-                .boxes.push(bbox);
+                .and_modify(|a| a.boxes.push(bbox))
+                .or_insert(Ann::new(image_id, None, vec![]));
         }
 
         Ok(annset)
