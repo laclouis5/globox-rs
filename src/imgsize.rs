@@ -1,5 +1,6 @@
 use crate::parsers::ParseErr;
 
+use std::path::Path;
 use imagesize::{size, ImageSize};
 
 
@@ -16,7 +17,7 @@ impl From<ImageSize> for ImgSize {
 }
 
 impl ImgSize {
-    fn from_file(path: &str) -> Result<ImgSize, ParseErr> {
+    pub fn from_file<P: AsRef<Path>>(path: P) -> Result<ImgSize, ParseErr> {
         size(path)
             .map_err(|_| ParseErr {})
             .map(Into::into)

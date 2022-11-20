@@ -1,6 +1,15 @@
-use crate::{bbox::BBox, parsers::ParseErr, annotation::Ann, imgsize::ImgSize};
+use crate::{
+    imgsize::ImgSize,
+    bbox::BBox, 
+    annotation::Ann, 
+    parsers::ParseErr, 
+};
 
-use std::fs;
+use std::{
+    fs,
+    path::Path,
+};
+
 use serde::Deserialize;
 use serde_json::from_slice;
 
@@ -81,7 +90,7 @@ impl TryFrom<LMAnn> for Ann {
 }
 
 impl Ann {
-    pub fn from_labelme(path: &str) -> Result<Ann, ParseErr> {
+    pub fn from_labelme<P: AsRef<Path>>(path: P) -> Result<Ann, ParseErr> {
         let content = fs::read_to_string(path)
             .map_err(|_| ParseErr {})?;
 

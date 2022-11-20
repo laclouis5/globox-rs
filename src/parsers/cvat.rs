@@ -1,7 +1,22 @@
-use crate::{annotationset::AnnSet, parsers::ParseErr, annotation::Ann, imgsize::ImgSize, bbox::BBox};
+use crate::{
+    imgsize::ImgSize, 
+    bbox::BBox,
+    annotation::Ann, 
+    annotationset::AnnSet, 
+    parsers::ParseErr, 
+};
 
-use std::{collections::HashMap, borrow::Cow};
-use quick_xml::{events::{Event, attributes::Attributes}, reader::Reader, name::QName};
+use std::{
+    collections::HashMap, 
+    path::Path,
+    borrow::Cow,
+};
+
+use quick_xml::{
+    events::{Event, attributes::Attributes}, 
+    reader::Reader, 
+    name::QName,
+};
 
 fn get_u32(attrs: &HashMap<QName, Result<Cow<str>, quick_xml::Error>>, name: &str) -> Result<u32, ParseErr> {
     attrs.get(&QName(name.as_bytes()))
@@ -21,7 +36,9 @@ fn get_f32(attrs: &HashMap<QName, Result<Cow<str>, quick_xml::Error>>, name: &st
         .map_err(|_| ParseErr{})
 }
 
-fn get_string(attrs: &HashMap<QName, Result<Cow<str>, quick_xml::Error>>, name: &str) -> Result<String, ParseErr> {
+fn get_string(
+    attrs: &HashMap<QName, Result<Cow<str>, quick_xml::Error>>, name: &str
+) -> Result<String, ParseErr> {
     let string = attrs.get(&QName(name.as_bytes()))
         .ok_or(ParseErr {})?
         .as_ref()
@@ -49,7 +66,7 @@ enum SizeState {
     None, Started, Ended,
 }
 
-fn parse_cvat(path: &str) -> Result<AnnSet, ParseErr> {
+fn parse_cvat<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseErr> {
     let mut reader = Reader::from_file(path)
         .map_err(|_| ParseErr {})?;
 
@@ -144,7 +161,7 @@ fn parse_cvat(path: &str) -> Result<AnnSet, ParseErr> {
 }
 
 impl AnnSet {
-    pub fn parse_cvat(path: &str) -> Result<AnnSet, ParseErr> {
+    pub fn parse_cvat<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseErr> {
         parse_cvat(path)
     }
 }
