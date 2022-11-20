@@ -10,6 +10,12 @@ pub struct ImgSize {
     pub height: u32,
 }
 
+impl ImgSize {
+    pub fn new(width: u32, height: u32) -> Self {
+        ImgSize { width, height }
+    }
+}
+
 impl From<ImageSize> for ImgSize {
     fn from(image_size: ImageSize) -> Self {
         ImgSize { width: image_size.width as u32, height: image_size.height as u32 }

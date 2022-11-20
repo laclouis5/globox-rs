@@ -1,5 +1,5 @@
-use std::collections::{HashMap};
-use crate::annotation::*;
+use std::collections::HashMap;
+use crate::annotation::Ann;
 
 #[derive(Debug, Clone)]
 pub struct AnnSet {

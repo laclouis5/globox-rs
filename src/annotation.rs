@@ -1,5 +1,5 @@
-use crate::imgsize::*;
-use crate::bbox::*;
+use crate::imgsize::ImgSize;
+use crate::bbox::BBox;
 
 #[derive(Debug, Clone)]
 pub struct Ann {

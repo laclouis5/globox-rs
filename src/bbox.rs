@@ -1,5 +1,10 @@
-use crate::imgsize::*;
-use crate::coords::*;
+use crate::imgsize::ImgSize;
+use crate::coords::{
+    Coords,
+    rel_to_abs,
+    ltwh_to_ltrb,
+    xywh_to_ltrb,
+};
 
 #[derive(Debug, Clone)]
 pub struct BBox {
@@ -79,9 +84,9 @@ impl BBox {
         coords: Coords, 
         fmt: BBoxFmt, 
         conf: Option<f32>,
-        imgsize: ImgSize,
+        img_size: ImgSize,
     ) -> Self {
-        let coords = rel_to_abs(coords, imgsize);
+        let coords = rel_to_abs(coords, img_size);
         BBox::create(label, coords, fmt, conf)
     }
 }

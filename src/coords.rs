@@ -1,4 +1,4 @@
-use crate::imgsize::*;
+use crate::imgsize::ImgSize;
 
 pub type Coords = (f32, f32, f32, f32);
 
