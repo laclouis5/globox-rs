@@ -58,7 +58,7 @@ impl From<InetAnn> for Ann {
 }
 
 impl Ann {
-    pub fn from_imagenet<P: AsRef<Path>>(path: P) -> Result<Ann, ParseErr> {
+    pub fn parse_imagenet<P: AsRef<Path>>(path: P) -> Result<Ann, ParseErr> {
         let content = fs::read_to_string(path)
             .map_err(|_| ParseErr {})?;
         let ann: InetAnn = from_str(&content)
@@ -67,7 +67,7 @@ impl Ann {
         Ok(ann.into())
     }
 
-    pub fn from_pascal_voc<P: AsRef<Path>>(path: P) -> Result<Ann, ParseErr> {
-        Ann::from_imagenet(path)
+    pub fn parse_pascal_voc<P: AsRef<Path>>(path: P) -> Result<Ann, ParseErr> {
+        Ann::parse_imagenet(path)
     }
 }

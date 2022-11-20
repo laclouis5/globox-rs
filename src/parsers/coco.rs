@@ -6,9 +6,7 @@ use crate::{
     parsers::ParseErr,
 };
 
-
 use std::{
-    error::Error,
     fs, 
     path::Path, 
     collections::HashMap
@@ -31,7 +29,7 @@ struct COCOImg {
     width: u32,
     height: u32,
 
-    #[serde(rename = "filename")]
+    #[serde(rename = "file_name")]
     img_id: String,
 }
 
@@ -69,9 +67,8 @@ impl AnnSet {
         let content = fs::read_to_string(path.as_ref())
             .map_err(|_| ParseErr {})?;
 
-        let coco: COCOAnnSet = from_str(&content)
+        let coco = from_str::<COCOAnnSet>(&content)
             .map_err(|_| ParseErr {})?;
-
 
         let to_label = coco.categories.iter()
             .map(|cat| {

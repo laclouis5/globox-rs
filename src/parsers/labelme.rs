@@ -68,7 +68,7 @@ impl TryFrom<LMAnn> for Ann {
 
     fn try_from(lm_ann: LMAnn) -> Result<Self, Self::Error> {
         let boxes = lm_ann.shapes.into_iter()
-            .filter(|b| b.shape_type != "rectangle")
+            .filter(|b| b.shape_type == "rectangle")
             .map(|lm_bbox| lm_bbox.try_into())
             .collect::<Result<Vec<BBox>, ParseErr>>()?;  // Change to try-collect` in the future
         
@@ -79,7 +79,7 @@ impl TryFrom<LMAnn> for Ann {
 }
 
 impl Ann {
-    pub fn from_labelme<P: AsRef<Path>>(path: P) -> Result<Ann, ParseErr> {
+    pub fn parse_labelme<P: AsRef<Path>>(path: P) -> Result<Ann, ParseErr> {
         let content = fs::read_to_string(path)
             .map_err(|_| ParseErr {})?;
 
