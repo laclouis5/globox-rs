@@ -30,14 +30,13 @@ impl Ann {
             .to_str()
             .ok_or(ParseErr {})?;
 
+        let mut boxes = vec![];
+
         let mut reader = csv::ReaderBuilder::new()
             .has_headers(false)
             .delimiter(b' ')
-            .flexible(true)
             .from_path(&path)
             .map_err(|_| ParseErr {})?;
-
-        let mut boxes = vec![];
 
         let mut raw_record = csv::StringRecord::new();
 

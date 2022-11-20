@@ -48,7 +48,8 @@ struct InetAnn {
 
 impl From<InetAnn> for Ann {
     fn from(ann: InetAnn) -> Ann {
-        let size = ImgSize { width: ann.size.width, height: ann.size.height };
+        let size = ImgSize::new(ann.size.width, ann.size.height);
+        
         let boxes = ann.object.into_iter()
             .map(Into::into)
             .collect();
@@ -61,6 +62,7 @@ impl Ann {
     pub fn parse_imagenet<P: AsRef<Path>>(path: P) -> Result<Ann, ParseErr> {
         let content = fs::read_to_string(path)
             .map_err(|_| ParseErr {})?;
+        
         let ann: InetAnn = from_str(&content)
             .map_err(|_| ParseErr {})?;
         

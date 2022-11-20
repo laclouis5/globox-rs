@@ -67,12 +67,12 @@ impl TryFrom<LMAnn> for Ann {
     type Error = ParseErr;
 
     fn try_from(lm_ann: LMAnn) -> Result<Self, Self::Error> {
+        let img_size = ImgSize::new(lm_ann.image_width, lm_ann.image_height);
+        
         let boxes = lm_ann.shapes.into_iter()
             .filter(|b| b.shape_type == "rectangle")
             .map(|lm_bbox| lm_bbox.try_into())
             .collect::<Result<Vec<BBox>, ParseErr>>()?;  // Change to try-collect` in the future
-        
-        let img_size = ImgSize { width: lm_ann.image_width, height: lm_ann.image_height };
 
         Ok(Ann::new(lm_ann.image_path, Some(img_size), boxes))   
     }

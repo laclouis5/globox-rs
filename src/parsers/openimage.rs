@@ -46,13 +46,24 @@ impl AnnSet {
         P1: AsRef<Path>,
         P2: AsRef<Path>,
     {
-        let mut annset = AnnSet::new();
-        let reader = csv::Reader::from_path(path)
-            .map_err(|_| ParseErr {})?;
         let imgs_path = imgs_path.as_ref().to_path_buf();
+        
+        let mut annset = AnnSet::new();
 
-        for line in reader.into_deserialize() {
-            let line: OALine = line.map_err(|_| ParseErr {})?;
+        let mut reader = csv::ReaderBuilder::new()
+            .trim(csv::Trim::All)
+            .from_path(path)
+            .map_err(|_| ParseErr {})?;
+
+        let headers = reader.headers()
+            .map_err(|_| ParseErr {})?
+            .clone();
+
+        let mut raw_record = csv::StringRecord::new();
+
+        while reader.read_record(&mut raw_record).map_err(|_| ParseErr {})? {
+            let line: OALine = raw_record.deserialize(Some(&headers))
+                .map_err(|_| ParseErr {})?;
 
             let img_id = line.img_id;
             let coords = (line.xmin, line.ymin, line.xmax, line.ymax);
