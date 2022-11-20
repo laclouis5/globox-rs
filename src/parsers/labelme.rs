@@ -11,7 +11,7 @@ use std::{
 };
 
 use serde::Deserialize;
-use serde_json::from_slice;
+use serde_json::from_str;
 
 
 // More a LMShape
@@ -25,37 +25,25 @@ struct LMBBox {
 impl TryFrom<LMBBox> for BBox {
     type Error = ParseErr;
 
-    fn try_from(mut lm_bbox: LMBBox) -> Result<BBox, ParseErr> {
+    fn try_from(lm_bbox: LMBBox) -> Result<BBox, ParseErr> {
         if lm_bbox.shape_type != "rectangle" {
             return Err(ParseErr {})
         }
 
-        let mut br = lm_bbox.points.pop()
-            .ok_or(ParseErr {})?;
-        let mut tl = lm_bbox.points.pop()
-            .ok_or(ParseErr {})?;
+        let (tl, br) = match &lm_bbox.points[..] {
+            [tl, br] => Ok((tl, br)),
+            _ => Err(ParseErr {})
+        }?;
 
-        if !lm_bbox.points.is_empty() {
-            return Err(ParseErr {})
-        }
+        let (xmin, ymin) = match tl[..] {
+            [xmin, ymin] => Ok((xmin, ymin)),
+            _ => Err(ParseErr {})
+        }?;
 
-        let ymax = br.pop()
-            .ok_or(ParseErr {})?;
-        let xmax = br.pop()
-            .ok_or(ParseErr {})?;
-
-        if !br.is_empty() {
-            return Err(ParseErr {})
-        }
-
-        let ymin = tl.pop()
-            .ok_or(ParseErr {})?;
-        let xmin = tl.pop()
-            .ok_or(ParseErr {})?;
-
-        if !tl.is_empty() {
-            return Err(ParseErr {})
-        }
+        let (xmax, ymax) = match br[..] {
+            [xmax, ymax] => Ok((xmax, ymax)),
+            _ => Err(ParseErr {})
+        }?;
 
         Ok(BBox::new(lm_bbox.label, xmin, ymin, xmax, ymax, None))
     }
@@ -80,6 +68,7 @@ impl TryFrom<LMAnn> for Ann {
 
     fn try_from(lm_ann: LMAnn) -> Result<Self, Self::Error> {
         let boxes = lm_ann.shapes.into_iter()
+            .filter(|b| b.shape_type != "rectangle")
             .map(|lm_bbox| lm_bbox.try_into())
             .collect::<Result<Vec<BBox>, ParseErr>>()?;  // Change to try-collect` in the future
         
@@ -94,7 +83,7 @@ impl Ann {
         let content = fs::read_to_string(path)
             .map_err(|_| ParseErr {})?;
 
-        let ann: LMAnn = from_slice(content.as_bytes())
+        let ann: LMAnn = from_str(&content)
             .map_err(|_| ParseErr {})?;
 
         ann.try_into().map_err(|_| ParseErr {})
