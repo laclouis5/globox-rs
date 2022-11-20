@@ -1,13 +1,8 @@
-use globox::{
-    imgsize::ImgSize,
-    annotation::Ann,
-    annotationset::AnnSet, 
-};
-use quick_xml::de::from_str;
+use globox::annotationset::AnnSet;
 
-use std::{error::Error, path::PathBuf};
+use std::path::PathBuf;
 
-use clap::{self, Parser};
+use clap::Parser;
 
 #[derive(clap::Parser)]
 struct Cli {
