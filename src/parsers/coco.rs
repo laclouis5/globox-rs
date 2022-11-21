@@ -109,7 +109,7 @@ impl AnnSet {
                 let ann = annset.items.get_mut(*img_id)
                     .expect("Image id must be present.");
                 
-                ann.boxes.push(bbox);
+                ann.bboxes.push(bbox);
             } else {
                 Err(ParseErr {})?
             }

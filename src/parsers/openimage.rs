@@ -84,7 +84,7 @@ impl AnnSet {
                         img_size
                     );
 
-                    ann.boxes.push(bbox);
+                    ann.bboxes.push(bbox);
                 },
 
                 Entry::Vacant(ve) => {

@@ -119,7 +119,7 @@ fn parse_cvat<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseErr> {
 
                             Some(a) => {
                                 let bbox = BBox::new(label, xmin, ymin, xmax, ymax, None);
-                                a.boxes.push(bbox);
+                                a.bboxes.push(bbox);
                             },
                         }
                     },
