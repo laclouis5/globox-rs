@@ -6,6 +6,7 @@ Based on https://github.com/laclouis5/globox. Work in progress.
 - [x] Parsers
 - [ ] Converters
 - [ ] COCO evaluation
-- [ ] Clean error Handling
-- [ ] Python package
+- [ ] Clean error handling
 - [ ] Tests
+- [ ] Python wrapper
+- [ ] Publish crate
