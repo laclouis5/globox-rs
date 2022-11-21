@@ -1,7 +1,7 @@
 use crate::annotationset::AnnSet;
 
 use std::{
-    path::{PathBuf},
+    path::PathBuf,
     time::Instant,
 };
 
