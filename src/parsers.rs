@@ -18,6 +18,8 @@ pub struct ParseErr {
     // source: Box<dyn Error + 'static>
 }
 
+// pub type ParseResult<T> = Result<T, ParseErr>;
+
 pub(crate) fn path_to_img_id<P: AsRef<Path>>(path: P, img_ext: &str) -> Result<String, ParseErr> {
     let img_id = path.as_ref()
             .with_extension(img_ext);

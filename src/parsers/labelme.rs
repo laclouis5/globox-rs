@@ -14,19 +14,17 @@ use std::{
 use serde::Deserialize;
 use serde_json::from_str;
 
-
-// More a LMShape
 #[derive(Deserialize)]
-struct LMBBox {
+struct LMShape {
     label: String,
     points: Vec<Vec<f32>>,
     shape_type: String,
 }
 
-impl TryFrom<LMBBox> for BBox {
+impl TryFrom<LMShape> for BBox {
     type Error = ParseErr;
 
-    fn try_from(lm_bbox: LMBBox) -> Result<BBox, ParseErr> {
+    fn try_from(lm_bbox: LMShape) -> Result<BBox, ParseErr> {
         if lm_bbox.shape_type != "rectangle" {
             return Err(ParseErr {})
         }
@@ -61,7 +59,7 @@ struct LMAnn {
     #[serde(rename = "imageHeight")]
     image_height: u32,
 
-    shapes: Vec<LMBBox>,
+    shapes: Vec<LMShape>,
 }
 
 impl TryFrom<LMAnn> for Ann {

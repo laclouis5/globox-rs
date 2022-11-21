@@ -15,7 +15,7 @@ use std::{
 use serde::Deserialize;
 use serde_json::from_str;
 
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 struct COCOCat {
     id: u32,
 
@@ -23,7 +23,7 @@ struct COCOCat {
     label: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 struct COCOImg {
     id: u32,
     width: u32,
@@ -41,7 +41,7 @@ impl From<COCOImg> for Ann {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 struct COCOAnn {
     #[serde(rename = "category_id")]
     cat_id: u32,
@@ -52,7 +52,7 @@ struct COCOAnn {
     bbox: Vec<f32>
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 struct COCOAnnSet {
     categories: Vec<COCOCat>,
     images: Vec<COCOImg>,
