@@ -8,7 +8,7 @@ use std::{
 use clap::{Parser, Args, Subcommand, ValueEnum};
 
 #[derive(Parser)]
-#[command(author, version, about)]
+#[command(about = "A tool to parse, convert and evaluate bounding box annotations")]
 struct Cli {
     #[arg(short, long, help = "Make the operation more talkative")]
     verbose: bool,
