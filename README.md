@@ -8,3 +8,4 @@ Based on https://github.com/laclouis5/globox. Work in progress.
 - [ ] COCO evaluation
 - [ ] Clean error Handling
 - [ ] Python package
+- [ ] Tests
