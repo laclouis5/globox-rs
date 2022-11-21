@@ -8,7 +8,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-fn read_dir<P: AsRef<Path>>(path: P, ext: &str) -> Result<Vec<PathBuf>, ParseErr> {
+fn read_dir<P: AsRef<Path>>(path: P, file_ext: &str) -> Result<Vec<PathBuf>, ParseErr> {
     path.as_ref()
         .read_dir()
         .map_err(|_| ParseErr {})?
@@ -19,7 +19,7 @@ fn read_dir<P: AsRef<Path>>(path: P, ext: &str) -> Result<Vec<PathBuf>, ParseErr
                 Ok(entry) => {
                     let p = entry.path();
                     match p.extension() {
-                        Some(e) if e == ext => {
+                        Some(e) if e == file_ext => {
                             Some(Ok(p))
                         },
 
