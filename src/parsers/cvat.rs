@@ -100,7 +100,7 @@ fn parse_cvat<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseErr> {
                         let img_id = get_string(&img_attrs, "name")?;
                         let width = get_u32(&img_attrs, "width")?;
                         let height = get_u32(&img_attrs, "height")?;
-                        let img_size = ImgSize { width, height };
+                        let img_size = ImgSize::new(width, height);
 
                         ann = Some(Ann::new(img_id, Some(img_size), vec![]));
                     },

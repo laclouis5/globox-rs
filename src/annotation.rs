@@ -9,11 +9,11 @@ pub struct Ann {
 }
 
 impl Ann {
-    pub fn new(img_id: String, img_size: Option<ImgSize>, boxes: Vec<BBox>) -> Self {
-        Ann {img_id, img_size, boxes }
+    pub fn new<S: Into<String>>(img_id: S, img_size: Option<ImgSize>, boxes: Vec<BBox>) -> Self {
+        Ann {img_id: img_id.into(), img_size, boxes }
     }
 
-    pub fn empty(img_id: String) -> Self {
-        Ann { img_id, img_size: None, boxes: vec![] }
+    pub fn empty<S: Into<String>>(img_id: S) -> Self {
+        Ann::new(img_id, None, vec![])
     }
 }

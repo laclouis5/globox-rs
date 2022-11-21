@@ -21,7 +21,7 @@ impl Ann {
         fmt: BBoxFmt,
         rel: bool,
         img_size: Option<ImgSize>,
-        img_id: &str,
+        img_id: String,
         conf_last: bool,
     ) -> Result<Ann, ParseErr> {    
         let mut boxes = vec![];
@@ -77,7 +77,7 @@ impl Ann {
             boxes.push(bbox);
         }
 
-        let ann = Ann::new(String::from(img_id), img_size, boxes);
+        let ann = Ann::new(img_id, img_size, boxes);
 
         Ok(ann)
     }
@@ -90,7 +90,7 @@ impl Ann {
         img_ext: &str,
     ) -> Result<Ann, ParseErr> { 
         let img_id = path_to_img_id(path.as_ref(), img_ext)?;
-        Ann::parse_txt_raw(path, fmt, false, img_size, &img_id, conf_last)
+        Ann::parse_txt_raw(path, fmt, false, img_size, img_id, conf_last)
     }
 
     pub fn parse_txt_rel<P: AsRef<Path>>(
@@ -101,7 +101,7 @@ impl Ann {
         img_ext: &str,
     ) -> Result<Ann, ParseErr> { 
         let img_id = path_to_img_id(path.as_ref(), img_ext)?;
-        Ann::parse_txt_raw(path, fmt, true, Some(img_size), &img_id, conf_last)
+        Ann::parse_txt_raw(path, fmt, true, Some(img_size), img_id, conf_last)
     }
 }
 
@@ -126,7 +126,7 @@ impl AnnSet {
                 Some(ImgSize::from_file(img_path)?)
             } else { None };
 
-            Ann::parse_txt_raw(p, fmt, false, img_size, &img_id, conf_last)
+            Ann::parse_txt_raw(p, fmt, false, img_size, img_id, conf_last)
         })
     }
 
@@ -147,7 +147,7 @@ impl AnnSet {
 
             let img_size = ImgSize::from_file(img_path)?;
 
-            Ann::parse_txt_raw(p, fmt, true, Some(img_size), &img_id, conf_last)
+            Ann::parse_txt_raw(p, fmt, true, Some(img_size), img_id, conf_last)
         })
     }
 }
