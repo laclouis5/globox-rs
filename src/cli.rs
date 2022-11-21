@@ -1,6 +1,9 @@
 use crate::annotationset::AnnSet;
 
-use std::path::PathBuf;
+use std::{
+    path::PathBuf,
+    time::Instant,
+};
 
 use clap::{Parser, Args, Subcommand, ValueEnum};
 
@@ -48,6 +51,8 @@ pub fn run() {
 
     match args.command {
         Commands::Parse(parse) => {
+            let time = Instant::now();
+
             let Parse { 
                 path, 
                 format, 
@@ -104,7 +109,7 @@ pub fn run() {
                 }
             };
 
-            println!("Parsed {} annotations.", annset.items.len());
+            println!("Parsed {} annotations in {:#?}.", annset.items.len(), time.elapsed());
         }
     }
 }
