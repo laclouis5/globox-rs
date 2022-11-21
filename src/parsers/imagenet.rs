@@ -2,7 +2,8 @@ use crate::{
     imgsize::ImgSize, 
     bbox::BBox, 
     annotation::Ann, 
-    parsers::ParseErr,
+    annotationset::AnnSet,
+    parsers::{ParseErr, folder::parse_folder},
 };
 
 use std::{
@@ -71,5 +72,15 @@ impl Ann {
 
     pub fn parse_pascal_voc<P: AsRef<Path>>(path: P) -> Result<Ann, ParseErr> {
         Ann::parse_imagenet(path)
+    }
+}
+
+impl AnnSet {
+    pub fn parse_imagenet<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseErr> {
+        parse_folder(path, "xml", |p| Ann::parse_imagenet(p))
+    }
+
+    pub fn parse_pascal_voc<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseErr> {
+        parse_folder(path, "xml", |p| Ann::parse_pascal_voc(p))
     }
 }

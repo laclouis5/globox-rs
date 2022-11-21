@@ -1,13 +1,16 @@
 use crate::{
     imgsize::ImgSize,
     bbox::{BBox, BBoxFmt},
+    annotationset::AnnSet,
     annotation::Ann,
+    parsers::{
+        ParseErr, path_to_img_id,
+        folder::parse_folder,
+    },
 };
 
 use std::path::Path;
 use csv;
-
-use super::ParseErr;
 
 type TxtLineGt = (String, f32, f32, f32, f32);
 type TxtLineDet = (String, f32, f32, f32, f32, f32);
@@ -18,24 +21,15 @@ impl Ann {
         fmt: BBoxFmt,
         rel: bool,
         img_size: Option<ImgSize>,
+        img_id: &str,
         conf_last: bool,
-        img_ext: &str,
     ) -> Result<Ann, ParseErr> {    
-        let img_id = path.as_ref()
-            .with_extension(img_ext);
-            
-        let img_id = img_id
-            .file_name()
-            .ok_or(ParseErr {})?
-            .to_str()
-            .ok_or(ParseErr {})?;
-
         let mut boxes = vec![];
 
         let mut reader = csv::ReaderBuilder::new()
             .has_headers(false)
             .delimiter(b' ')
-            .from_path(&path)
+            .from_path(path)
             .map_err(|_| ParseErr {})?;
 
         let mut raw_record = csv::StringRecord::new();
@@ -95,7 +89,8 @@ impl Ann {
         conf_last: bool,
         img_ext: &str,
     ) -> Result<Ann, ParseErr> { 
-        Ann::parse_txt_raw(path, fmt, false, img_size, conf_last, img_ext)
+        let img_id = path_to_img_id(path.as_ref(), img_ext)?;
+        Ann::parse_txt_raw(path, fmt, false, img_size, &img_id, conf_last)
     }
 
     pub fn parse_txt_rel<P: AsRef<Path>>(
@@ -105,6 +100,54 @@ impl Ann {
         conf_last: bool,
         img_ext: &str,
     ) -> Result<Ann, ParseErr> { 
-        Ann::parse_txt_raw(path, fmt, true, Some(img_size), conf_last, img_ext)
+        let img_id = path_to_img_id(path.as_ref(), img_ext)?;
+        Ann::parse_txt_raw(path, fmt, true, Some(img_size), &img_id, conf_last)
+    }
+}
+
+impl AnnSet {
+    pub fn parse_txt<P1: AsRef<Path>, P2: AsRef<Path>>(
+        path: P1,
+        fmt: BBoxFmt,
+        imgs_path: Option<P2>,
+        conf_last: bool,
+        img_ext: &str,
+    ) -> Result<AnnSet, ParseErr> { 
+        let imgs_path = imgs_path
+            .and_then(|p| Some(p.as_ref().to_path_buf()));
+
+        parse_folder(path, "txt", |p| {
+            let img_id = path_to_img_id(p, img_ext)?;
+            
+            let img_size = if let Some(imgs_path) = imgs_path.as_ref() {
+                let mut img_path = imgs_path.clone();
+                img_path.push(&img_id);
+
+                Some(ImgSize::from_file(img_path)?)
+            } else { None };
+
+            Ann::parse_txt_raw(p, fmt, false, img_size, &img_id, conf_last)
+        })
+    }
+
+    pub fn parse_txt_rel<P1: AsRef<Path>, P2: AsRef<Path>>(
+        path: P1,
+        fmt: BBoxFmt,
+        imgs_path: P2,
+        conf_last: bool,
+        img_ext: &str,
+    ) -> Result<AnnSet, ParseErr> { 
+        let imgs_path = imgs_path.as_ref().to_path_buf();
+
+        parse_folder(path, "txt", |p| {
+            let img_id = path_to_img_id(p, img_ext)?;
+        
+            let mut img_path = imgs_path.clone();
+            img_path.push(&img_id);
+
+            let img_size = ImgSize::from_file(img_path)?;
+
+            Ann::parse_txt_raw(p, fmt, true, Some(img_size), &img_id, conf_last)
+        })
     }
 }

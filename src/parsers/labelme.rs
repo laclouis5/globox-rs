@@ -2,7 +2,8 @@ use crate::{
     imgsize::ImgSize,
     bbox::BBox, 
     annotation::Ann, 
-    parsers::ParseErr, 
+    annotationset::AnnSet,
+    parsers::{ParseErr, folder::parse_folder}, 
 };
 
 use std::{
@@ -87,5 +88,11 @@ impl Ann {
             .map_err(|_| ParseErr {})?;
 
         ann.try_into().map_err(|_| ParseErr {})
+    }
+}
+
+impl AnnSet {
+    pub fn parse_labelme<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseErr> {
+        parse_folder(path, "json", |p| Ann::parse_labelme(p))
     }
 }
