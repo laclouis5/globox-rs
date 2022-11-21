@@ -16,7 +16,7 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Parse and display basic statistics
+    /// Parse and display basic statistics.
     Parse(Parse),
 }
 
@@ -27,19 +27,19 @@ enum AnnFormat {
 
 #[derive(Args)]
 struct Parse {
-    #[arg(help = "the format of the annotations")]
+    #[arg(help = "The format of the annotations")]
     format: AnnFormat,
 
-    #[arg(help = "the file or directory path of the annotations")]
+    #[arg(help = "The file or directory path of the annotations")]
     path: PathBuf, 
 
-    #[arg(long, help = "the image directory for the annotations")]
+    #[arg(long, help = "The image directory for the annotations")]
     imgs_path: Option<PathBuf>,
 
-    #[arg(long, default_value = "jpg", help = "the image extension (YOLO only)")]
+    #[arg(long, default_value = "jpg", help = "The image extension (YOLO only)")]
     img_ext: String,
 
-    #[arg(long, help = "whether the confidence is stored last or not (YOLO only)")]
+    #[arg(long, help = "Whether the confidence is stored last or not (YOLO only)")]
     conf_last: bool,
 }
 
