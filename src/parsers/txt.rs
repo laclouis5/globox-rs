@@ -3,10 +3,7 @@ use crate::{
     bbox::{BBox, BBoxFmt},
     annotationset::AnnSet,
     annotation::Ann,
-    parsers::{
-        ParseError, path_to_img_id,
-        folder::parse_folder,
-    },
+    parsers::{ParseError, path_to_img_id},
 };
 
 use std::path::Path;
@@ -116,7 +113,7 @@ impl AnnSet {
         let imgs_path = imgs_path
             .and_then(|p| Some(p.as_ref().to_path_buf()));
 
-        parse_folder(path, "txt", |p| {
+        AnnSet::parse_folder(path, "txt", |p| {
             let img_id = path_to_img_id(p, img_ext)?;
             
             let img_size = if let Some(imgs_path) = imgs_path.as_ref() {
@@ -139,7 +136,7 @@ impl AnnSet {
     ) -> Result<AnnSet, ParseError> { 
         let imgs_path = imgs_path.as_ref().to_path_buf();
 
-        parse_folder(path, "txt", |p| {
+        AnnSet::parse_folder(path, "txt", |p| {
             let img_id = path_to_img_id(p, img_ext)?;
         
             let mut img_path = imgs_path.clone();

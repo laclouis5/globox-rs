@@ -42,7 +42,7 @@ impl TryFrom<&Ann> for InetAnn {
 }
 
 impl Ann {
-    /// Serialize to a String of Imagenet annotation format.
+    /// Serialize the annotation to a String of Imagenet annotation format.
     pub fn to_imagenet(&self) -> Result<String, ConvError> {
         let ann: InetAnn = self.try_into()?;
 
@@ -51,7 +51,7 @@ impl Ann {
         to_string(&ann).map_err(|_| ConvError {})
     }
 
-    /// Save to Imagenet annotation format.
+    /// Save the annotation to Imagenet annotation format.
     pub fn save_imagenet<P: AsRef<Path>>(&self, path: P) -> Result<(), ConvError> {
         let mut path = path.as_ref().to_path_buf();
         path.push(&self.img_id);
@@ -64,27 +64,24 @@ impl Ann {
 }
 
 impl Ann {
-    /// Serialize to a String of Pascal VOC annotation format.
+    /// Serialize the annotation to a String of Pascal VOC annotation format.
     pub fn to_pascal_voc(&self) -> Result<String, ConvError> {
         self.to_imagenet()
     }
 
-    /// Save to Pascal VOC annotation format.
+    /// Save the annotation to Pascal VOC annotation format.
     pub fn save_pascal_voc<P: AsRef<Path>>(&self, path: P) -> Result<(), ConvError> {
         self.save_imagenet(path)
     }
 }
 
 impl AnnSet {
+    /// Save the annotations to Imagenet annotation format.
     pub fn save_imagenet<P: AsRef<Path>>(&self, path: P) -> Result<(), ConvError> {
-        // Avoid .values() which is O(capacity).
-        for (_, ann) in &self.items {
-            ann.save_imagenet(&path)?
-        }
-
-        Ok(())
+        self.save_all(|ann| ann.save_imagenet(&path))
     }
 
+    /// Save the annotations to Pascal VOC annotation format.
     pub fn save_pascal_voc<P: AsRef<Path>>(&self, path: P) -> Result<(), ConvError> {
         self.save_imagenet(path)
     }

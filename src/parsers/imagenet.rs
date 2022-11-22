@@ -3,7 +3,7 @@ use crate::{
     bbox::BBox, 
     annotation::Ann, 
     annotationset::AnnSet,
-    parsers::{ParseError, folder::parse_folder},
+    parsers::ParseError,
     serde_records::imagenet::*,
 };
 
@@ -62,10 +62,10 @@ impl Ann {
 
 impl AnnSet {
     pub fn parse_imagenet<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseError> {
-        parse_folder(path, "xml", |p| Ann::parse_imagenet(p))
+        AnnSet::parse_folder(path, "xml", |p| Ann::parse_imagenet(p))
     }
 
     pub fn parse_pascal_voc<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseError> {
-        parse_folder(path, "xml", |p| Ann::parse_pascal_voc(p))
+        AnnSet::parse_folder(path, "xml", |p| Ann::parse_pascal_voc(p))
     }
 }

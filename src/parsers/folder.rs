@@ -31,20 +31,26 @@ fn read_dir<P: AsRef<Path>>(path: P, file_ext: &str) -> Result<Vec<PathBuf>, Par
         .collect::<Result<Vec<_>, _>>()
 }
 
-pub fn parse_folder<P1: AsRef<Path>, F>(
-    path: P1, 
-    ext: &str,
-    parser: F
-) -> Result<AnnSet, ParseError> where
-    F: Fn(&Path) -> Result<Ann, ParseError>,
-{
-    let files = read_dir(path, ext)?;
-    let mut annset = AnnSet::with_capacity(files.len());
+impl AnnSet {
+    pub fn parse_folder<P, F>(
+        path: P, 
+        ext: &str,
+        parser: F,
+    ) -> Result<AnnSet, ParseError> where
+        P: AsRef<Path>,
+        F: Fn(&Path) -> Result<Ann, ParseError>,
+    {
+        // Eagerly read the directory so we can monitor parsing 
+        // progress in the future.
+        let files = read_dir(path, ext)?;
 
-    for p in files {
-        let ann = parser(p.as_ref())?;
-        annset.items.insert(ann.img_id.clone(), ann);
+        let mut annset = AnnSet::with_capacity(files.len());
+    
+        for p in files {
+            let ann = parser(p.as_ref())?;
+            annset.items.insert(ann.img_id.clone(), ann);
+        }
+    
+        Ok(annset)
     }
-
-    Ok(annset)
 }

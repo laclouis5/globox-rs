@@ -46,7 +46,7 @@ impl TryFrom<&Ann> for LMAnn {
 }
 
 impl Ann {
-    /// Serialize to a String of LabelMe annotation format.
+    /// Serialize the annotation to a String of Labelme annotation format.
     pub fn to_labelme(&self) -> Result<String, ConvError> {
         let ann: LMAnn = self.try_into()?;
         
@@ -55,7 +55,7 @@ impl Ann {
         to_string(&ann).map_err(|_| ConvError {})
     }
 
-    /// Save to LabelMe annotation format.
+    /// Save the annotation to Labelme annotation format.
     pub fn save_labelme<P: AsRef<Path>>(&self, path: P) -> Result<(), ConvError> {
         let mut path = path.as_ref().to_path_buf();
         path.push(&self.img_id);
@@ -68,13 +68,8 @@ impl Ann {
 }
 
 impl AnnSet {
-    /// Save to LabelMe annotation format.
+    /// Save the annotations to Labelme annotation format.
     pub fn save_labelme<P: AsRef<Path>>(&self, path: P) -> Result<(), ConvError> {
-        // Avoid .values() which is O(capacity).
-        for (_, ann) in &self.items {
-            ann.save_labelme(&path)?
-        }
-
-        Ok(())
+        self.save_all(|ann| ann.save_labelme(&path))
     }
 }

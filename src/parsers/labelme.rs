@@ -3,7 +3,7 @@ use crate::{
     bbox::BBox, 
     annotation::Ann, 
     annotationset::AnnSet,
-    parsers::{ParseError, folder::parse_folder}, 
+    parsers::ParseError, 
     serde_records::labelme::{LMShape, LMAnn},
 };
 
@@ -72,6 +72,6 @@ impl Ann {
 
 impl AnnSet {
     pub fn parse_labelme<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseError> {
-        parse_folder(path, "json", |p| Ann::parse_labelme(p))
+        AnnSet::parse_folder(path, "json", |p| Ann::parse_labelme(p))
     }
 }
