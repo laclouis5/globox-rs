@@ -1,4 +1,4 @@
-use crate::parsers::ParseErr;
+use crate::parsers::ParseError;
 
 use std::path::Path;
 use imagesize::{size, ImageSize};
@@ -22,9 +22,9 @@ impl From<ImageSize> for ImgSize {
 }
 
 impl ImgSize {
-    pub fn from_file<P: AsRef<Path>>(path: P) -> Result<ImgSize, ParseErr> {
+    pub fn from_file<P: AsRef<Path>>(path: P) -> Result<ImgSize, ParseError> {
         size(path)
-            .map_err(|_| ParseErr {})
+            .map_err(|_| ParseError {})
             .map(Into::into)
     }
 }

@@ -14,38 +14,38 @@ use std::{
 };
 
 #[derive(Debug)]
-pub struct ParseErr { 
+pub struct ParseError { 
     // source: Box<dyn Error + 'static>
 }
 
-// pub type ParseResult<T> = Result<T, ParseErr>;
+// pub type ParseResult<T> = Result<T, ParseError>;
 
-pub(crate) fn path_to_img_id<P: AsRef<Path>>(path: P, img_ext: &str) -> Result<String, ParseErr> {
+pub(crate) fn path_to_img_id<P: AsRef<Path>>(path: P, img_ext: &str) -> Result<String, ParseError> {
     let img_id = path.as_ref()
             .with_extension(img_ext);
             
     let img_id = img_id
         .file_name()
-        .ok_or(ParseErr {})?
+        .ok_or(ParseError {})?
         .to_str()
-        .ok_or(ParseErr {})?;
+        .ok_or(ParseError {})?;
         
     Ok(String::from(img_id))
 }
 
-// impl ParseErr {
+// impl ParseError {
 //     pub fn new(source: Box<dyn Error + 'static>) -> Self {
-//         ParseErr { source: source }
+//         ParseError { source: source }
 //     }
 // }
 
-// impl Display for ParseErr {
+// impl Display for ParseError {
 //     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 //         write!(f, "parse error")
 //     }
 // }
 
-// impl Error for ParseErr {
+// impl Error for ParseError {
 //     fn source(&self) -> Option<&(dyn Error + 'static)> {
 //         Some(&*self.source)
 //     }

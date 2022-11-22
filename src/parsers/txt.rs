@@ -4,7 +4,7 @@ use crate::{
     annotationset::AnnSet,
     annotation::Ann,
     parsers::{
-        ParseErr, path_to_img_id,
+        ParseError, path_to_img_id,
         folder::parse_folder,
     },
 };
@@ -23,23 +23,23 @@ impl Ann {
         img_size: Option<ImgSize>,
         img_id: String,
         conf_last: bool,
-    ) -> Result<Ann, ParseErr> {    
+    ) -> Result<Ann, ParseError> {    
         let mut boxes = vec![];
 
         let mut reader = csv::ReaderBuilder::new()
             .has_headers(false)
             .delimiter(b' ')
             .from_path(path)
-            .map_err(|_| ParseErr {})?;
+            .map_err(|_| ParseError {})?;
 
         let mut raw_record = csv::StringRecord::new();
 
-        while reader.read_record(&mut raw_record).map_err(|_| ParseErr {})? {
+        while reader.read_record(&mut raw_record).map_err(|_| ParseError {})? {
             let (label, coords, conf) = match raw_record.len() {
                 5 => {
                     let rec: TxtLineGt = raw_record
                         .deserialize(None)
-                        .map_err(|_| ParseErr {})?;
+                        .map_err(|_| ParseError {})?;
 
                     let coords = (rec.1, rec.2, rec.3, rec.4);
 
@@ -49,7 +49,7 @@ impl Ann {
                 6 => {
                     let rec: TxtLineDet = raw_record
                         .deserialize(None)
-                        .map_err(|_| ParseErr {})?;
+                        .map_err(|_| ParseError {})?;
 
                     if conf_last {
                         let coords = (rec.1, rec.2, rec.3, rec.4);
@@ -61,7 +61,7 @@ impl Ann {
                 },
 
                 _ => { 
-                    return Err(ParseErr {})
+                    return Err(ParseError {})
                 },
             };
 
@@ -88,7 +88,7 @@ impl Ann {
         img_size: Option<ImgSize>,
         conf_last: bool,
         img_ext: &str,
-    ) -> Result<Ann, ParseErr> { 
+    ) -> Result<Ann, ParseError> { 
         let img_id = path_to_img_id(path.as_ref(), img_ext)?;
         Ann::parse_txt_raw(path, fmt, false, img_size, img_id, conf_last)
     }
@@ -99,7 +99,7 @@ impl Ann {
         img_size: ImgSize,
         conf_last: bool,
         img_ext: &str,
-    ) -> Result<Ann, ParseErr> { 
+    ) -> Result<Ann, ParseError> { 
         let img_id = path_to_img_id(path.as_ref(), img_ext)?;
         Ann::parse_txt_raw(path, fmt, true, Some(img_size), img_id, conf_last)
     }
@@ -112,7 +112,7 @@ impl AnnSet {
         imgs_path: Option<P2>,
         conf_last: bool,
         img_ext: &str,
-    ) -> Result<AnnSet, ParseErr> { 
+    ) -> Result<AnnSet, ParseError> { 
         let imgs_path = imgs_path
             .and_then(|p| Some(p.as_ref().to_path_buf()));
 
@@ -136,7 +136,7 @@ impl AnnSet {
         imgs_path: P2,
         conf_last: bool,
         img_ext: &str,
-    ) -> Result<AnnSet, ParseErr> { 
+    ) -> Result<AnnSet, ParseError> { 
         let imgs_path = imgs_path.as_ref().to_path_buf();
 
         parse_folder(path, "txt", |p| {

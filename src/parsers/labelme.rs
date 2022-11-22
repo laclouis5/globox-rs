@@ -3,7 +3,8 @@ use crate::{
     bbox::BBox, 
     annotation::Ann, 
     annotationset::AnnSet,
-    parsers::{ParseErr, folder::parse_folder}, 
+    parsers::{ParseError, folder::parse_folder}, 
+    serde_records::labelme::{LMShape, LMAnn},
 };
 
 use std::{
@@ -11,59 +12,37 @@ use std::{
     path::Path,
 };
 
-use serde::Deserialize;
 use serde_json::from_str;
 
-#[derive(Deserialize)]
-struct LMShape {
-    label: String,
-    points: Vec<Vec<f32>>,
-    shape_type: String,
-}
-
 impl TryFrom<LMShape> for BBox {
-    type Error = ParseErr;
+    type Error = ParseError;
 
-    fn try_from(lm_bbox: LMShape) -> Result<BBox, ParseErr> {
+    fn try_from(lm_bbox: LMShape) -> Result<BBox, ParseError> {
         if lm_bbox.shape_type != "rectangle" {
-            return Err(ParseErr {})
+            return Err(ParseError {})
         }
 
-        let (tl, br) = match &lm_bbox.points[..] {
-            [tl, br] => Ok((tl, br)),
-            _ => Err(ParseErr {})
+        let (lt, rb) = match &lm_bbox.points[..] {
+            [lt, rb] => Ok((lt, rb)),
+            _ => Err(ParseError {})
         }?;
 
-        let (xmin, ymin) = match tl[..] {
+        let (xmin, ymin) = match lt[..] {
             [xmin, ymin] => Ok((xmin, ymin)),
-            _ => Err(ParseErr {})
+            _ => Err(ParseError {})
         }?;
 
-        let (xmax, ymax) = match br[..] {
+        let (xmax, ymax) = match rb[..] {
             [xmax, ymax] => Ok((xmax, ymax)),
-            _ => Err(ParseErr {})
+            _ => Err(ParseError {})
         }?;
 
         Ok(BBox::new(lm_bbox.label, xmin, ymin, xmax, ymax, None))
     }
 }
 
-#[derive(Deserialize)]
-struct LMAnn {
-    #[serde(rename = "imagePath")]
-    image_path: String,
-
-    #[serde(rename = "imageWidth")]
-    image_width: u32,
-
-    #[serde(rename = "imageHeight")]
-    image_height: u32,
-
-    shapes: Vec<LMShape>,
-}
-
 impl TryFrom<LMAnn> for Ann {
-    type Error = ParseErr;
+    type Error = ParseError;
 
     fn try_from(lm_ann: LMAnn) -> Result<Self, Self::Error> {
         let img_size = ImgSize::new(lm_ann.image_width, lm_ann.image_height);
@@ -71,26 +50,26 @@ impl TryFrom<LMAnn> for Ann {
         let boxes = lm_ann.shapes.into_iter()
             .filter(|b| b.shape_type == "rectangle")
             .map(|lm_bbox| lm_bbox.try_into())
-            .collect::<Result<Vec<BBox>, ParseErr>>()?;  // Change to try-collect` in the future
+            .collect::<Result<Vec<BBox>, ParseError>>()?;  // Change to try-collect` in the future
 
         Ok(Ann::new(lm_ann.image_path, Some(img_size), boxes))   
     }
 }
 
 impl Ann {
-    pub fn parse_labelme<P: AsRef<Path>>(path: P) -> Result<Ann, ParseErr> {
+    pub fn parse_labelme<P: AsRef<Path>>(path: P) -> Result<Ann, ParseError> {
         let content = fs::read_to_string(path)
-            .map_err(|_| ParseErr {})?;
+            .map_err(|_| ParseError {})?;
 
         let ann: LMAnn = from_str(&content)
-            .map_err(|_| ParseErr {})?;
+            .map_err(|_| ParseError {})?;
 
-        ann.try_into().map_err(|_| ParseErr {})
+        ann.try_into().map_err(|_| ParseError {})
     }
 }
 
 impl AnnSet {
-    pub fn parse_labelme<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseErr> {
+    pub fn parse_labelme<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseError> {
         parse_folder(path, "json", |p| Ann::parse_labelme(p))
     }
 }

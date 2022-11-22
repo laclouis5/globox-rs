@@ -10,3 +10,5 @@ pub mod converters;
 pub mod evaluators;
 
 pub mod cli;
+
+pub(crate) mod serde_records;

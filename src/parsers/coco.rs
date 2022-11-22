@@ -3,7 +3,7 @@ use crate::{
     bbox::{BBox, BBoxFmt},
     annotation::Ann,
     annotationset::AnnSet,
-    parsers::ParseErr,
+    parsers::ParseError,
 };
 
 use std::{
@@ -61,14 +61,14 @@ struct COCOAnnSet {
 
 impl AnnSet {
     // Could optimize clones
-    pub fn parse_coco<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseErr> {
+    pub fn parse_coco<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseError> {
         let mut annset = AnnSet::new();
 
         let content = fs::read_to_string(path.as_ref())
-            .map_err(|_| ParseErr {})?;
+            .map_err(|_| ParseError {})?;
 
         let coco = from_str::<COCOAnnSet>(&content)
-            .map_err(|_| ParseErr {})?;
+            .map_err(|_| ParseError {})?;
 
         let to_label = coco.categories.iter()
             .map(|cat| {
@@ -91,12 +91,12 @@ impl AnnSet {
 
         for coco_ann in coco.annotations {
             let img_id = to_img.get(&coco_ann.img_id)
-                .ok_or(ParseErr {})?;
+                .ok_or(ParseError {})?;
 
             // Redundant. Would need a to_ann with &Ann
 
             let label = to_label.get(&coco_ann.cat_id)
-                .ok_or(ParseErr {})?;
+                .ok_or(ParseError {})?;
             
             if let [l, t, w, h] = coco_ann.bbox[..] {
                 let bbox = BBox::create(
@@ -111,7 +111,7 @@ impl AnnSet {
                 
                 ann.bboxes.push(bbox);
             } else {
-                Err(ParseErr {})?
+                Err(ParseError {})?
             }
         }
 

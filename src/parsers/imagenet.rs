@@ -3,7 +3,7 @@ use crate::{
     bbox::BBox, 
     annotation::Ann, 
     annotationset::AnnSet,
-    parsers::{ParseErr, folder::parse_folder},
+    parsers::{ParseError, folder::parse_folder},
 };
 
 use std::{
@@ -60,27 +60,27 @@ impl From<InetAnn> for Ann {
 }
 
 impl Ann {
-    pub fn parse_imagenet<P: AsRef<Path>>(path: P) -> Result<Ann, ParseErr> {
+    pub fn parse_imagenet<P: AsRef<Path>>(path: P) -> Result<Ann, ParseError> {
         let content = fs::read_to_string(path)
-            .map_err(|_| ParseErr {})?;
+            .map_err(|_| ParseError {})?;
         
         let ann: InetAnn = from_str(&content)
-            .map_err(|_| ParseErr {})?;
+            .map_err(|_| ParseError {})?;
         
         Ok(ann.into())
     }
 
-    pub fn parse_pascal_voc<P: AsRef<Path>>(path: P) -> Result<Ann, ParseErr> {
+    pub fn parse_pascal_voc<P: AsRef<Path>>(path: P) -> Result<Ann, ParseError> {
         Ann::parse_imagenet(path)
     }
 }
 
 impl AnnSet {
-    pub fn parse_imagenet<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseErr> {
+    pub fn parse_imagenet<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseError> {
         parse_folder(path, "xml", |p| Ann::parse_imagenet(p))
     }
 
-    pub fn parse_pascal_voc<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseErr> {
+    pub fn parse_pascal_voc<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseError> {
         parse_folder(path, "xml", |p| Ann::parse_pascal_voc(p))
     }
 }

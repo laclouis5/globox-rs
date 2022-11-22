@@ -4,7 +4,7 @@ use std::{
 };
 
 use crate::{
-    parsers::ParseErr, 
+    parsers::ParseError, 
     annotation::Ann,
     annotationset::AnnSet,
     bbox::{BBox, BBoxFmt}, 
@@ -41,7 +41,7 @@ struct OALine {
 impl AnnSet {
     pub fn parse_openimage<P1, P2>(
         path: P1, imgs_path: P2,
-    ) -> Result<AnnSet, ParseErr> 
+    ) -> Result<AnnSet, ParseError> 
     where 
         P1: AsRef<Path>,
         P2: AsRef<Path>,
@@ -53,17 +53,17 @@ impl AnnSet {
         let mut reader = csv::ReaderBuilder::new()
             .trim(csv::Trim::All)
             .from_path(path)
-            .map_err(|_| ParseErr {})?;
+            .map_err(|_| ParseError {})?;
 
         let headers = reader.headers()
-            .map_err(|_| ParseErr {})?
+            .map_err(|_| ParseError {})?
             .clone();
 
         let mut raw_record = csv::StringRecord::new();
 
-        while reader.read_record(&mut raw_record).map_err(|_| ParseErr {})? {
+        while reader.read_record(&mut raw_record).map_err(|_| ParseError {})? {
             let line: OALine = raw_record.deserialize(Some(&headers))
-                .map_err(|_| ParseErr {})?;
+                .map_err(|_| ParseError {})?;
 
             let img_id = line.img_id;
             let coords = (line.xmin, line.ymin, line.xmax, line.ymax);

@@ -1,20 +1,20 @@
 use crate::{
     annotation::Ann,
     annotationset::AnnSet,
-    parsers::ParseErr,
+    parsers::ParseError,
 };
 
 use std::{
     path::{Path, PathBuf},
 };
 
-fn read_dir<P: AsRef<Path>>(path: P, file_ext: &str) -> Result<Vec<PathBuf>, ParseErr> {
+fn read_dir<P: AsRef<Path>>(path: P, file_ext: &str) -> Result<Vec<PathBuf>, ParseError> {
     path.as_ref()
         .read_dir()
-        .map_err(|_| ParseErr {})?
+        .map_err(|_| ParseError {})?
         .filter_map(|result| {
             match result {
-                Err(_) => Some(Err(ParseErr {})),
+                Err(_) => Some(Err(ParseError {})),
 
                 Ok(entry) => {
                     let p = entry.path();
@@ -35,8 +35,8 @@ pub fn parse_folder<P1: AsRef<Path>, F>(
     path: P1, 
     ext: &str,
     parser: F
-) -> Result<AnnSet, ParseErr> where
-    F: Fn(&Path) -> Result<Ann, ParseErr>,
+) -> Result<AnnSet, ParseError> where
+    F: Fn(&Path) -> Result<Ann, ParseError>,
 {
     let files = read_dir(path, ext)?;
     let mut annset = AnnSet::with_capacity(files.len());

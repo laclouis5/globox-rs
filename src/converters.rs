@@ -8,6 +8,6 @@ pub mod txt;
 pub mod yolo;
 
 #[derive(Debug)]
-pub struct ConvertErr { 
+pub struct ConvError { 
 
 }

@@ -3,7 +3,7 @@ use crate::{
     bbox::BBox,
     annotation::Ann, 
     annotationset::AnnSet, 
-    parsers::ParseErr, 
+    parsers::ParseError, 
 };
 
 use std::{
@@ -18,31 +18,31 @@ use quick_xml::{
     name::QName,
 };
 
-fn get_u32(attrs: &HashMap<QName, Result<Cow<str>, quick_xml::Error>>, name: &str) -> Result<u32, ParseErr> {
+fn get_u32(attrs: &HashMap<QName, Result<Cow<str>, quick_xml::Error>>, name: &str) -> Result<u32, ParseError> {
     attrs.get(&QName(name.as_bytes()))
-        .ok_or(ParseErr {})?
+        .ok_or(ParseError {})?
         .as_ref()
-        .map_err(|_| ParseErr {})?
+        .map_err(|_| ParseError {})?
         .parse::<u32>()
-        .map_err(|_| ParseErr {})
+        .map_err(|_| ParseError {})
 }
 
-fn get_f32(attrs: &HashMap<QName, Result<Cow<str>, quick_xml::Error>>, name: &str) -> Result<f32, ParseErr> {
+fn get_f32(attrs: &HashMap<QName, Result<Cow<str>, quick_xml::Error>>, name: &str) -> Result<f32, ParseError> {
     attrs.get(&QName(name.as_bytes()))
-        .ok_or(ParseErr {})?
+        .ok_or(ParseError {})?
         .as_ref()
-        .map_err(|_| ParseErr {})?
+        .map_err(|_| ParseError {})?
         .parse::<f32>()
-        .map_err(|_| ParseErr{})
+        .map_err(|_| ParseError{})
 }
 
 fn get_string(
     attrs: &HashMap<QName, Result<Cow<str>, quick_xml::Error>>, name: &str
-) -> Result<String, ParseErr> {
+) -> Result<String, ParseError> {
     let string = attrs.get(&QName(name.as_bytes()))
-        .ok_or(ParseErr {})?
+        .ok_or(ParseError {})?
         .as_ref()
-        .map_err(|_| ParseErr {})?
+        .map_err(|_| ParseError {})?
         .as_ref()
         .to_owned();
 
@@ -66,9 +66,9 @@ enum SizeState {
     None, Started, Ended,
 }
 
-fn parse_cvat<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseErr> {
+fn parse_cvat<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseError> {
     let mut reader = Reader::from_file(path)
-        .map_err(|_| ParseErr {})?;
+        .map_err(|_| ParseError {})?;
 
     reader.trim_text(true);
 
@@ -80,7 +80,7 @@ fn parse_cvat<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseErr> {
 
     loop {
         match reader.read_event_into(&mut buf) {
-            Err(_) => Err(ParseErr {})?,
+            Err(_) => Err(ParseError {})?,
             
             Ok(Event::Eof) => break,
 
@@ -161,7 +161,7 @@ fn parse_cvat<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseErr> {
 }
 
 impl AnnSet {
-    pub fn parse_cvat<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseErr> {
+    pub fn parse_cvat<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseError> {
         parse_cvat(path)
     }
 }

@@ -3,7 +3,7 @@ use crate::{
     bbox::BBoxFmt,
     annotation::Ann,
     annotationset::AnnSet,
-    parsers::ParseErr,
+    parsers::ParseError,
 };
 
 use std::path::Path;
@@ -14,7 +14,7 @@ impl Ann {
         img_size: ImgSize,
         conf_last: bool,
         img_ext: &str,
-    ) -> Result<Ann, ParseErr> { 
+    ) -> Result<Ann, ParseError> { 
         Ann::parse_txt_rel(path, BBoxFmt::XYWH, img_size, conf_last, img_ext)
     }
 }
@@ -25,7 +25,7 @@ impl AnnSet {
         imgs_path: P2,
         conf_last: bool,
         img_ext: &str,
-    ) -> Result<AnnSet, ParseErr> {
+    ) -> Result<AnnSet, ParseError> {
         AnnSet::parse_txt_rel(path, BBoxFmt::XYWH, imgs_path, conf_last, img_ext)
     }
 }
