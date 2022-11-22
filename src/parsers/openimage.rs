@@ -1,42 +1,18 @@
+use crate::{
+    imgsize::ImgSize,
+    bbox::{BBox, BBoxFmt}, 
+    annotation::Ann,
+    annotationset::AnnSet,
+    parsers::ParseError,
+    serde_records::openimage::*,
+};
+
 use std::{
     path::Path,
     collections::hash_map::Entry,
 };
 
-use crate::{
-    parsers::ParseError, 
-    annotation::Ann,
-    annotationset::AnnSet,
-    bbox::{BBox, BBoxFmt}, 
-    imgsize::ImgSize,
-};
-
 use csv;
-use serde::Deserialize;
-
-#[derive(Deserialize)]
-struct OALine {
-    #[serde(rename = "ImageID")]
-    img_id: String,
-
-    #[serde(rename = "LabelName")]
-    label: String,
-
-    #[serde(rename = "Confidence")]
-    conf: Option<f32>,
-
-    #[serde(rename = "XMin")]
-    xmin: f32,
-
-    #[serde(rename = "YMin")]
-    ymin: f32,
-
-    #[serde(rename = "XMax")]
-    xmax: f32,
-
-    #[serde(rename = "YMax")]
-    ymax: f32,
-}
 
 impl AnnSet {
     pub fn parse_openimage<P1, P2>(
@@ -66,7 +42,7 @@ impl AnnSet {
             let line: OALine = raw_record.deserialize(Some(&headers))
                 .map_err(|_| ParseError {})?;
 
-            let img_id = line.img_id;
+            let img_id = String::from(line.img_id);
             let coords = (line.xmin, line.ymin, line.xmax, line.ymax);
 
             // TODO: Could avoid to String.clone() when key is present.

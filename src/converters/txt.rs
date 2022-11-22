@@ -12,6 +12,7 @@ use std::{path::Path, fs};
 use itertools::Itertools;
 
 impl BBox {
+    // TODO: Add error handling for " " in label.
     fn to_txt(&self, fmt: BBoxFmt, conf_last: bool) -> String {
         let label = &self.label;
         let (c1, c2, c3, c4) = self.coords(fmt);
@@ -29,6 +30,7 @@ impl BBox {
         }
     }
 
+    // TODO: Add error handling for " " in label.
     fn to_txt_rel(&self, fmt: BBoxFmt, conf_last: bool, img_size: ImgSize) -> String {
         let label = &self.label;
         let coords = self.coords(fmt);
