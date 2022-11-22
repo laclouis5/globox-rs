@@ -4,13 +4,11 @@ use crate::{
     annotationset::AnnSet,
     annotation::Ann,
     parsers::{ParseError, path_to_img_id},
+    serde_records::txt::*,
 };
 
 use std::path::Path;
 use csv;
-
-type TxtLineGt = (String, f32, f32, f32, f32);
-type TxtLineDet = (String, f32, f32, f32, f32, f32);
 
 impl Ann {
     fn parse_txt_raw<P: AsRef<Path>>(
@@ -78,7 +76,9 @@ impl Ann {
 
         Ok(ann)
     }
+}
 
+impl Ann {
     pub fn parse_txt<P: AsRef<Path>>(
         path: P, 
         fmt: BBoxFmt,

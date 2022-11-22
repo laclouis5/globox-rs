@@ -1,3 +1,5 @@
+use crate::imgsize::ImgSize;
+
 use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize)]
@@ -12,6 +14,18 @@ pub(crate) struct INetBndBox {
 pub(crate) struct InetSize {
     pub(crate) width: u32, 
     pub(crate) height: u32,
+}
+
+impl From<ImgSize> for InetSize {
+    fn from(size: ImgSize) -> Self {
+        InetSize { width: size.width, height: size.height }
+    }
+}
+
+impl From<InetSize> for ImgSize {
+    fn from(size: InetSize) -> Self {
+        ImgSize { width: size.width, height: size.height }
+    }
 }
 
 #[derive(Serialize, Deserialize)]

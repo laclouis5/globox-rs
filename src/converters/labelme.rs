@@ -1,4 +1,5 @@
 use crate::{
+    imgsize::ImgSize,
     bbox::BBox,
     annotation::Ann,
     annotationset::AnnSet,
@@ -31,11 +32,8 @@ impl TryFrom<&Ann> for LMAnn {
     fn try_from(ann: &Ann) -> Result<Self, Self::Error> {
         let image_path = ann.img_id.clone();
 
-        let (image_width, image_height) = if let Some(img_size) = ann.img_size {
-            (img_size.width, img_size.height)
-        } else {
-            Err(ConvError {})?
-        };
+        let img_size = ann.img_size.ok_or(ConvError {})?;
+        let ImgSize { width: image_width, height: image_height } = img_size;
 
         let shapes = ann.bboxes.iter()
             .map(Into::<LMShape>::into)

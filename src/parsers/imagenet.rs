@@ -31,7 +31,7 @@ impl From<InetObj> for BBox {
 
 impl From<InetAnn> for Ann {
     fn from(ann: InetAnn) -> Ann {
-        let size = ImgSize::new(ann.size.width, ann.size.height);
+        let size: ImgSize = ann.size.into();
         
         let boxes = ann.objects.into_iter()
             .map(Into::into)

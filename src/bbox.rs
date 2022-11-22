@@ -61,6 +61,14 @@ impl BBox {
     pub fn xywh(&self) -> Coords {
         (self.xmid(), self.ymid(), self.width(), self.height())
     }
+
+    pub fn coords(&self, fmt: BBoxFmt) -> Coords {
+        match fmt {
+            BBoxFmt::LTRB => self.ltrb(),
+            BBoxFmt::LTWH => self.ltwh(),
+            BBoxFmt::XYWH => self.xywh(),
+        }
+    }
 }
 
 #[derive(Clone, Copy)]

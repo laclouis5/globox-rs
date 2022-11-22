@@ -25,11 +25,9 @@ impl TryFrom<&Ann> for InetAnn {
     fn try_from(ann: &Ann) -> Result<Self, Self::Error> {
         let filename = ann.img_id.clone();
 
-        let size = if let Some(img_size) = ann.img_size {
-            InetSize {width: img_size.width, height: img_size.height}
-        } else {
-            Err(ConvError {})?
-        };
+        let size: InetSize = ann.img_size
+            .ok_or(ConvError {})?
+            .into();
 
         let objects = ann.bboxes.iter()
             .map(Into::<InetObj>::into)
