@@ -1,8 +1,5 @@
 use crate::{
-    imgsize::ImgSize,
     coords::abs_to_rel,
-    bbox::{BBox, BBoxFmt}, 
-    annotation::Ann,
     annotationset::AnnSet,
     converters::ConvError,
     serde_records::openimage::*,
