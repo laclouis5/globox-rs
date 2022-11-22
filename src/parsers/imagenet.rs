@@ -4,6 +4,7 @@ use crate::{
     annotation::Ann, 
     annotationset::AnnSet,
     parsers::{ParseError, folder::parse_folder},
+    serde_records::imagenet::*,
 };
 
 use std::{
@@ -11,47 +12,28 @@ use std::{
     path::Path,
 };
 
-use serde::Deserialize;
 use quick_xml::de::from_str;
-
-#[derive(Deserialize)]
-struct INetBndBox {
-    xmin: f32, ymin: f32, xmax: f32, ymax: f32,
-}
-
-#[derive(Deserialize)]
-struct InetSize {
-    width: u32, height: u32,
-}
-
-#[derive(Deserialize)]
-struct InetObj {
-    name: String, bndbox: INetBndBox,
-}
 
 impl From<InetObj> for BBox {
     fn from(obj: InetObj) -> Self {
+        let bndbox = obj.bndbox;
+
         BBox::new(
             obj.name,
-            obj.bndbox.xmin,
-            obj.bndbox.ymin,
-            obj.bndbox.xmax,
-            obj.bndbox.ymax,
+            bndbox.xmin,
+            bndbox.ymin,
+            bndbox.xmax,
+            bndbox.ymax,
             None,
         )
     }
-}
-
-#[derive(Deserialize)]
-struct InetAnn {
-    filename: String, size: InetSize, object: Vec<InetObj>,
 }
 
 impl From<InetAnn> for Ann {
     fn from(ann: InetAnn) -> Ann {
         let size = ImgSize::new(ann.size.width, ann.size.height);
         
-        let boxes = ann.object.into_iter()
+        let boxes = ann.objects.into_iter()
             .map(Into::into)
             .collect();
 
@@ -64,6 +46,9 @@ impl Ann {
         let content = fs::read_to_string(path)
             .map_err(|_| ParseError {})?;
         
+        // Annotation files are likely small. Parsing is likely faster
+        // by first reading the entire file to memory before parsing it instead
+        // of using a buffered reader (`from_reader`).
         let ann: InetAnn = from_str(&content)
             .map_err(|_| ParseError {})?;
         

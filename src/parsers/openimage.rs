@@ -50,6 +50,7 @@ impl AnnSet {
         
         let mut annset = AnnSet::new();
 
+        // Csv Reader is automatically buffered, no need to wrap it in BufReader.
         let mut reader = csv::ReaderBuilder::new()
             .trim(csv::Trim::All)
             .from_path(path)

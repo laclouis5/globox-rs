@@ -58,6 +58,8 @@ impl TryFrom<LMAnn> for Ann {
 
 impl Ann {
     pub fn parse_labelme<P: AsRef<Path>>(path: P) -> Result<Ann, ParseError> {
+        // Faster to first read the whole file in memory then parse JSON, 
+        // plus those files are quite small.
         let content = fs::read_to_string(path)
             .map_err(|_| ParseError {})?;
 

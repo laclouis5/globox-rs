@@ -79,6 +79,8 @@ fn parse_cvat<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseError> {
     let mut ann: Option<Ann> = None;
 
     loop {
+        // Xml Reader is a BufReader, no need to wrap it or load it
+        // entirely to memory as a String to avoid unnecessary syscalls.
         match reader.read_event_into(&mut buf) {
             Err(_) => Err(ParseError {})?,
             
