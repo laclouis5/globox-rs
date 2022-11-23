@@ -5,8 +5,10 @@ use crate::{
     serde_records::openimage::*,
 };
 
-use std::path::Path;
-
+use std::{
+    path::Path,
+    ffi::OsStr,
+};
 use csv;
 
 impl AnnSet {
@@ -14,6 +16,12 @@ impl AnnSet {
         &self,
         path: P,
     ) -> Result<(), ConvError> {
+        if let Some(e) = path.as_ref().extension() {
+            if e != OsStr::new("csv") {
+                return Err(ConvError {})
+            }
+        }
+
         let mut writer = csv::Writer::from_path(path)
             .map_err(|_| ConvError {})?;
 
