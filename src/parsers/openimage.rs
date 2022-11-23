@@ -8,7 +8,7 @@ use crate::{
 };
 
 use std::{
-    path::Path,
+    path::{Path},
     collections::hash_map::Entry,
 };
 
@@ -22,7 +22,7 @@ impl AnnSet {
         P1: AsRef<Path>,
         P2: AsRef<Path>,
     {
-        let imgs_path = imgs_path.as_ref().to_path_buf();
+        let imgs_path = imgs_path.as_ref();
         
         let mut annset = AnnSet::new();
 
@@ -65,7 +65,7 @@ impl AnnSet {
                 },
 
                 Entry::Vacant(ve) => {
-                    let mut img_path = imgs_path.clone();
+                    let mut img_path = imgs_path.to_path_buf();
                     img_path.push(&img_id);
                     let img_size = ImgSize::from_file(&img_path)?;
 

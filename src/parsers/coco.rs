@@ -86,7 +86,7 @@ impl AnnSet {
             let img_size = ImgSize::new(img.width, img.height);
             let ann = Ann::new(img.img_id.clone(), Some(img_size), vec![]);
 
-            annset.items.insert(img.img_id.clone(), ann);
+            annset.insert(ann);
         }
 
         for coco_ann in coco.annotations {
@@ -106,7 +106,7 @@ impl AnnSet {
                     None
                 );
 
-                let ann = annset.items.get_mut(*img_id)
+                let ann = annset.get_mut(*img_id)
                     .expect("Image id must be present.");
                 
                 ann.bboxes.push(bbox);

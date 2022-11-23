@@ -13,8 +13,8 @@ impl AnnSet {
     ) -> Result<(), ConvError> where 
         F: Fn(&Ann) -> Result<(), ConvError>,
     {
-        // Avoid .values() which is O(capacity).
-        for (_, ann) in &self.items {
+
+        for ann in self {
             save_fn(ann)?;
         }
 

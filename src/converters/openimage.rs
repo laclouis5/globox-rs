@@ -17,7 +17,7 @@ impl AnnSet {
         let mut writer = csv::Writer::from_path(path)
             .map_err(|_| ConvError {})?;
 
-        for (_, ann) in &self.items {
+        for ann in self {
             let img_id = &ann.img_id;
             let img_size = ann.img_size.ok_or(ConvError {})?;
 

@@ -133,7 +133,7 @@ fn parse_cvat<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseError> {
             Ok(Event::End(data)) => {
                 if data.name().as_ref() == b"image" {
                     if let Some(a) = ann.take() {
-                        anns.items.insert(a.img_id.clone(), a);
+                        anns.insert(a);
                     } else {
                         panic!("Ann should not be None at this point.")
                     }
@@ -146,7 +146,7 @@ fn parse_cvat<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseError> {
                         .and_then(|s| s.parse::<usize>().ok());
 
                     if let Some(s) = size {
-                        anns.items.reserve(s);
+                        anns.reserve(s);
                     }
 
                     size_state = SizeState::Ended;

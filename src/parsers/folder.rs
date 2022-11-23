@@ -48,7 +48,7 @@ impl AnnSet {
     
         for p in files {
             let ann = parser(p.as_ref())?;
-            annset.items.insert(ann.img_id.clone(), ann);
+            annset.insert(ann);
         }
     
         Ok(annset)

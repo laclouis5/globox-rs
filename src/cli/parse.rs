@@ -75,6 +75,6 @@ impl Parse {
             }
         };
 
-        println!("Parsed {} annotations in {:#?}.", annset.items.len(), time.elapsed());
+        println!("Parsed {} annotations in {:#?}.", annset.len(), time.elapsed());
     }
 }
