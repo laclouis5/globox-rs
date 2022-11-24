@@ -86,7 +86,7 @@ fn parse_cvat<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseError> {
             
             Ok(Event::Eof) => break,
 
-            Ok(Event::Start(data)) => {
+            Ok(Event::Start(data)) | Ok(Event::Empty(data)) => {
                 match data.name().as_ref() {
                     b"size" => {
                         if let SizeState::None = size_state {
