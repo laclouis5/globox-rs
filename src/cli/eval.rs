@@ -1,6 +1,6 @@
-use super::SrcAnnFmt; 
+// use crate::path::expand_user;
 
-use std::path::PathBuf;
+use super::SrcAnnFmt; 
 
 use clap::Args;
 
@@ -10,16 +10,16 @@ pub(super) struct Eval {
     gts_fmt: SrcAnnFmt,
 
     #[arg(help = "The file or directory path of the ground truth annotations")]
-    gts_path: PathBuf,
+    gts_path: String,
 
     #[arg(help = "The format of the predicted annotations")]
     dets_fmt: SrcAnnFmt,
 
     #[arg(help = "The file or directory path of the predicted annotations")]
-    dets_path: PathBuf,
+    dets_path: String,
 
     #[arg(long, help = "The image directory of the annotations")]
-    imgs_path: Option<PathBuf>,
+    imgs_path: Option<String>,
 
     #[arg(long, default_value = "jpg", help = "The image extension of ground truth annotation images (YOLO only)")]
     gts_img_ext: String,
