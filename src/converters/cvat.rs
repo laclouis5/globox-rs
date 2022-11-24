@@ -95,7 +95,7 @@ impl AnnSet {
         let file = fs::File::create(path)
             .map_err(|_| ConvError {})?;
 
-        let mut writer = Writer::new_with_indent(file, b' ', 2);
+        let mut writer = Writer::new(file);
 
         // Decl
         write_decl(&mut writer)

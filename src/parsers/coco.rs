@@ -4,6 +4,7 @@ use crate::{
     annotation::Ann,
     annotationset::AnnSet,
     parsers::ParseError,
+    serde_records::coco::*,
 };
 
 use std::{
@@ -12,26 +13,7 @@ use std::{
     collections::HashMap
 };
 
-use serde::Deserialize;
 use serde_json::from_str;
-
-#[derive(Deserialize)]
-struct COCOCat {
-    id: u32,
-
-    #[serde(rename = "name")]
-    label: String,
-}
-
-#[derive(Deserialize)]
-struct COCOImg {
-    id: u32,
-    width: u32,
-    height: u32,
-
-    #[serde(rename = "file_name")]
-    img_id: String,
-}
 
 impl From<COCOImg> for Ann {
     fn from(img: COCOImg) -> Self {
@@ -39,24 +21,6 @@ impl From<COCOImg> for Ann {
 
         Ann::new(img.img_id, Some(img_size), vec![])
     }
-}
-
-#[derive(Deserialize)]
-struct COCOAnn {
-    #[serde(rename = "category_id")]
-    cat_id: u32,
-
-    #[serde(rename = "image_id")]
-    img_id: u32,
-
-    bbox: Vec<f32>
-}
-
-#[derive(Deserialize)]
-struct COCOAnnSet {
-    categories: Vec<COCOCat>,
-    images: Vec<COCOImg>,
-    annotations: Vec<COCOAnn>,
 }
 
 impl AnnSet {
@@ -103,7 +67,7 @@ impl AnnSet {
                     String::from(*label), 
                     (l, t, w, h),
                     BBoxFmt::LTWH,
-                    None
+                    coco_ann.conf,
                 );
 
                 let ann = annset.get_mut(*img_id)
