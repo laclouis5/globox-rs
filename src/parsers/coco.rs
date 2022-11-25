@@ -25,6 +25,7 @@ impl From<COCOImg> for Ann {
 
 impl AnnSet {
     // Could optimize clones
+    
     pub fn parse_coco<P: AsRef<Path>>(path: P) -> Result<AnnSet, ParseError> {
         let mut annset = AnnSet::new();
 

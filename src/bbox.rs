@@ -6,7 +6,8 @@ use crate::coords::{
     xywh_to_ltrb,
 };
 
-/// A rectangular bounding box for object detection in images.
+/// A rectangular bounding box with a label and an optional 
+/// confidence score.
 /// 
 /// The bounding box coordinates are expressed in pixels where 
 /// `(xmin, ymin)` is the top-left corner and `(xmax, ymax)` the 
@@ -21,7 +22,7 @@ pub struct BBox {
 }
 
 impl BBox {
-    /// Create a new bounding box.
+    /// Creates a bounding box annotation.
     /// 
     /// The coordinates are expressed in pixels where `(xmin, ymin)` is
     /// the top-left corner and `(xmax, ymax)` the bottom-right corner.
@@ -56,7 +57,7 @@ impl BBox {
         Self { label: label.into(), xmin, ymin, xmax, ymax, conf }
     }
 
-    /// Create a new bounding box in the given coordinate format.
+    /// Creates a bounding box annotation in the given coordinate format.
     /// 
     /// # Panics
     /// Will panic if the confidence score is not in `0..=1` or 
@@ -76,7 +77,7 @@ impl BBox {
         BBox::new(label, xmin, ymin, xmax, ymax, conf)
     }
 
-    /// Create a new bounding box in the given coordinate format using
+    /// Creates a bounding box in the given coordinate format using
     /// relative coordinates.
     /// 
     /// The image size must be provided to convert the coordinates 
@@ -111,7 +112,7 @@ impl BBox {
 
     pub fn conf(&self) -> Option<f32> { self.conf }
 
-    /// Set the bounding box confidence score.
+    /// Sets the bounding box confidence score.
     /// 
     /// # Panics
     /// The operation panics if the score is not in `0..=1`.
@@ -149,25 +150,25 @@ pub enum BBoxFmt {
 }
 
 impl BBox {
-    /// Get the bounding box coordinates as a `(xmin, ymin, xmax, ymax)` 
+    /// Returns the bounding box coordinates as a `(xmin, ymin, xmax, ymax)` 
     /// tuple.
     pub fn ltrb(&self) -> Coords {
         (self.xmin(), self.ymin(), self.xmax(), self.ymax())
     }
 
-    /// Get the bounding box coordinates as a `(xmin, ymin, width, height)` 
+    /// Returns the bounding box coordinates as a `(xmin, ymin, width, height)` 
     /// tuple.
     pub fn ltwh(&self) -> Coords {
         (self.xmin(), self.ymin(), self.width(), self.height())
     }
 
-    /// Get the bounding box coordinates as a `(xmid, ymid, width, height)` 
+    /// Returns the bounding box coordinates as a `(xmid, ymid, width, height)` 
     /// tuple.
     pub fn xywh(&self) -> Coords {
         (self.xmid(), self.ymid(), self.width(), self.height())
     }
 
-    /// Get the bounding box coordinates in a specific coordinates format.
+    /// Returns the bounding box coordinates in the specified coordinate format.
     pub fn coords(&self, fmt: BBoxFmt) -> Coords {
         match fmt {
             BBoxFmt::LTRB => self.ltrb(),
