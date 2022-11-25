@@ -6,8 +6,14 @@ use crate::coords::{
     xywh_to_ltrb,
 };
 
+/// A rectangular bounding box for object detection in images.
+/// 
+/// The bounding box coordinates are expressed in pixels where 
+/// `(xmin, ymin)` is the top-left corner and `(xmax, ymax)` the 
+/// bottom-right corner.
 #[derive(Debug, Clone)]
 pub struct BBox {
+    /// The bounding box label.
     pub label: String,
     xmin: f32, ymin: f32,
     xmax: f32, ymax: f32,
@@ -15,6 +21,14 @@ pub struct BBox {
 }
 
 impl BBox {
+    /// Create a new bounding box.
+    /// 
+    /// The coordinates are expressed in pixels where `(xmin, ymin)` is
+    /// the top-left corner and `(xmax, ymax)` the bottom-right corner.
+    /// 
+    /// # Panics
+    /// Will panic if the confidence score is not in `0..=1` or 
+    /// if the coordinates are invalid.
     pub fn new<L: Into<String>>(
         label: L, 
         xmin: f32, 
@@ -23,14 +37,63 @@ impl BBox {
         ymax: f32, 
         conf: Option<f32>
     ) -> Self {
-        assert!(xmin <= xmax);
-        assert!(ymin <= ymax);
+        assert!(
+            xmin <= xmax, 
+            "`xmax` ({}) should be greater than or equal to `xmin` ({})", xmax, xmin
+        );
+        assert!(
+            ymin <= ymax, 
+            "`ymax` ({}) should be greater than or equal to `ymin` ({})", ymax, ymin
+        );
         
         if let Some(conf) = conf {
-            assert!(0.0 <= conf && conf <= 1.0);
+            assert!(
+                0.0 <= conf && conf <= 1.0, 
+                "confidence score ({}) should be in 0..=1", conf
+            );
         }
 
         Self { label: label.into(), xmin, ymin, xmax, ymax, conf }
+    }
+
+    /// Create a new bounding box in the given coordinate format.
+    /// 
+    /// # Panics
+    /// Will panic if the confidence score is not in `0..=1` or 
+    /// if the coordinates are invalid.
+    pub fn create<L: Into<String>>(
+        label: L, 
+        coords: Coords, 
+        fmt: BBoxFmt, 
+        conf: Option<f32>, 
+    ) -> Self {
+        let (xmin, ymin, xmax, ymax) = match fmt {
+            BBoxFmt::LTRB => coords,
+            BBoxFmt::LTWH => ltwh_to_ltrb(coords),
+            BBoxFmt::XYWH => xywh_to_ltrb(coords),
+        };
+
+        BBox::new(label, xmin, ymin, xmax, ymax, conf)
+    }
+
+    /// Create a new bounding box in the given coordinate format using
+    /// relative coordinates.
+    /// 
+    /// The image size must be provided to convert the coordinates 
+    /// to be absolute.
+    /// 
+    /// # Panics
+    /// Will panic if the confidence score is not in `0..=1` or 
+    /// if the coordinates are invalid.
+    pub fn create_rel<L: Into<String>>(
+        label: L, 
+        coords: Coords,
+        fmt: BBoxFmt, 
+        conf: Option<f32>,
+        img_size: ImgSize,
+    ) -> Self {
+        let coords = rel_to_abs(coords, img_size);
+        BBox::create(label, coords, fmt, conf)
     }
 }
 
@@ -47,21 +110,64 @@ impl BBox {
     pub fn height(&self) -> f32 { self.ymax - self.ymin }
 
     pub fn conf(&self) -> Option<f32> { self.conf }
+
+    /// Set the bounding box confidence score.
+    /// 
+    /// # Panics
+    /// The operation panics if the score is not in `0..=1`.
+    pub fn set_conf(&mut self, conf: f32) {
+        assert!(0.0 <= conf && conf <= 1.0);
+        self.conf = Some(conf);
+    }
+}
+
+/// The coordinates format of a bounding box.
+/// 
+/// The available formats are:
+/// * `BBoxFormat::LTRB`: 
+///`(xmin, ymin, xmax, ymax)` where `(xmin, ymin)` is
+/// the top-left corner and `(xmax, ymax)` the bottom-right one.
+/// 
+/// * `BBoxFormat::LTWH`:
+/// `(xmin, ymin, width, height)` where `(xmin, ymin)` is
+/// the top-left corner and `(width, height)` the bounding box size.
+/// 
+/// * `BBoxFormat::XYWH`:
+/// `(xmid, ymid, width, height)` where `(xmid, ymid)` is
+/// bounding box center and `(width, height)` the bounding box size.
+#[derive(Clone, Copy)]
+pub enum BBoxFmt {
+    /// `(xmin, ymin, xmax, ymax)` where `(xmin, ymin)` is
+    /// the top-left corner and `(xmax, ymax)` the bottom-right one.
+    LTRB, 
+    /// `(xmin, ymin, width, height)` where `(xmin, ymin)` is
+    /// the top-left corner and `(width, height)` the bounding box size.
+    LTWH, 
+    /// `(xmid, ymid, width, height)` where `(xmid, ymid)` is
+    /// bounding box center and `(width, height)` the bounding box size.
+    XYWH,
 }
 
 impl BBox {
+    /// Get the bounding box coordinates as a `(xmin, ymin, xmax, ymax)` 
+    /// tuple.
     pub fn ltrb(&self) -> Coords {
         (self.xmin(), self.ymin(), self.xmax(), self.ymax())
     }
 
+    /// Get the bounding box coordinates as a `(xmin, ymin, width, height)` 
+    /// tuple.
     pub fn ltwh(&self) -> Coords {
         (self.xmin(), self.ymin(), self.width(), self.height())
     }
 
+    /// Get the bounding box coordinates as a `(xmid, ymid, width, height)` 
+    /// tuple.
     pub fn xywh(&self) -> Coords {
         (self.xmid(), self.ymid(), self.width(), self.height())
     }
 
+    /// Get the bounding box coordinates in a specific coordinates format.
     pub fn coords(&self, fmt: BBoxFmt) -> Coords {
         match fmt {
             BBoxFmt::LTRB => self.ltrb(),
@@ -71,38 +177,10 @@ impl BBox {
     }
 }
 
-#[derive(Clone, Copy)]
-pub enum BBoxFmt {
-    LTRB, 
-    LTWH, 
-    XYWH,
-}
-
 impl BBox {
-    pub fn create<L: Into<String>>(
-        label: L, 
-        coords: Coords, 
-        fmt: BBoxFmt, 
-        conf: Option<f32>, 
-    ) -> Self {
-        let (xmin, ymin, xmax, ymax) = match fmt {
-            BBoxFmt::LTRB => coords,
-            BBoxFmt::LTWH => ltwh_to_ltrb(coords),
-            BBoxFmt::XYWH => xywh_to_ltrb(coords),
-        };
-
-        BBox::new(label, xmin, ymin, xmax, ymax, conf)
-    }
-
-    pub fn create_rel<L: Into<String>>(
-        label: L, 
-        coords: Coords, 
-        fmt: BBoxFmt, 
-        conf: Option<f32>,
-        img_size: ImgSize,
-    ) -> Self {
-        let coords = rel_to_abs(coords, img_size);
-        BBox::create(label, coords, fmt, conf)
+    /// The bounding box area.
+    pub fn area(&self) -> f32 {
+        self.width() * self.height()
     }
 }
 
