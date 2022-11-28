@@ -13,6 +13,7 @@ use std::{
 };
 
 use csv;
+use smol_str::SmolStr;
 
 impl AnnSet {
     pub fn parse_openimage<P1, P2>(
@@ -42,7 +43,7 @@ impl AnnSet {
             let line: OALine = raw_record.deserialize(Some(&headers))
                 .map_err(|_| ParseError {})?;
 
-            let img_id = String::from(line.img_id);
+            let img_id = SmolStr::from(line.img_id);
             let coords = (line.xmin, line.ymin, line.xmax, line.ymax);
 
             // TODO: Could avoid to String.clone() when key is present.
@@ -66,7 +67,7 @@ impl AnnSet {
 
                 Entry::Vacant(ve) => {
                     let mut img_path = imgs_path.to_path_buf();
-                    img_path.push(&img_id);
+                    img_path.push(img_id.as_str());
                     let img_size = ImgSize::from_file(&img_path)?;
 
                     let ann = Ann::new(img_id, Some(img_size), vec![]);

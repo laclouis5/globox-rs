@@ -1,11 +1,13 @@
 use serde::{Serialize, Deserialize};
 
+use smol_str::SmolStr;
+
 #[derive(Serialize, Deserialize)]
 pub(crate) struct COCOCat {
     pub(crate) id: usize,
 
     #[serde(rename = "name")]
-    pub(crate) label: String,
+    pub(crate) label: SmolStr,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -16,7 +18,7 @@ pub(crate) struct COCOImg {
     pub(crate) height: u32,
 
     #[serde(rename = "file_name")]
-    pub(crate) img_id: String,
+    pub(crate) img_id: SmolStr,
 }
 
 #[derive(Serialize, Deserialize)]

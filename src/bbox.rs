@@ -6,6 +6,8 @@ use crate::coords::{
     xywh_to_ltrb,
 };
 
+use smol_str::SmolStr;
+
 /// A rectangular bounding box with a label and an optional 
 /// confidence score.
 /// 
@@ -15,7 +17,7 @@ use crate::coords::{
 #[derive(Debug, Clone)]
 pub struct BBox {
     /// The bounding box label.
-    pub label: String,
+    pub label: SmolStr,
     xmin: f32, ymin: f32,
     xmax: f32, ymax: f32,
     conf: Option<f32>,
@@ -30,7 +32,7 @@ impl BBox {
     /// # Panics
     /// Will panic if the confidence score is not in `0..=1` or 
     /// if the coordinates are invalid.
-    pub fn new<L: Into<String>>(
+    pub fn new<L: Into<SmolStr>>(
         label: L, 
         xmin: f32, 
         ymin: f32, 
@@ -62,7 +64,7 @@ impl BBox {
     /// # Panics
     /// Will panic if the confidence score is not in `0..=1` or 
     /// if the coordinates are invalid.
-    pub fn create<L: Into<String>>(
+    pub fn create<L: Into<SmolStr>>(
         label: L, 
         coords: Coords, 
         fmt: BBoxFmt, 
@@ -86,7 +88,7 @@ impl BBox {
     /// # Panics
     /// Will panic if the confidence score is not in `0..=1` or 
     /// if the coordinates are invalid.
-    pub fn create_rel<L: Into<String>>(
+    pub fn create_rel<L: Into<SmolStr>>(
         label: L, 
         coords: Coords,
         fmt: BBoxFmt, 

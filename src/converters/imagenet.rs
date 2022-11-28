@@ -52,7 +52,7 @@ impl Ann {
     /// Save the annotation to Imagenet annotation format.
     pub fn save_imagenet<P: AsRef<Path>>(&self, path: P) -> Result<(), ConvError> {
         let mut path = path.as_ref().to_path_buf();
-        path.push(&self.img_id);
+        path.push(self.img_id.as_str());
         path.set_extension("xml");
 
         let contents = self.to_imagenet()?;

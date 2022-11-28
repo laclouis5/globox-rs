@@ -3,6 +3,8 @@ use std::{
 };
 use crate::annotation::Ann;
 
+use smol_str::SmolStr;
+
 /// A set of annotations with efficient indexing by image id.
 /// 
 /// Annotations cannot be modified in-place. Modification is
@@ -11,7 +13,7 @@ use crate::annotation::Ann;
 #[derive(Debug, Clone)]
 pub struct AnnSet {
     /// WARNING: do not mutate the annotation labels.
-    pub(crate) items: HashMap<String, Ann>,
+    pub(crate) items: HashMap<SmolStr, Ann>,
 }
 
 impl AnnSet {
@@ -74,7 +76,7 @@ impl AnnSet {
 
 impl IntoIterator for AnnSet {
     type Item = Ann;
-    type IntoIter = IntoValues<String, Ann>;
+    type IntoIter = IntoValues<SmolStr, Ann>;
 
     // TODO: O(capacity)
     fn into_iter(self) -> Self::IntoIter {
@@ -84,7 +86,7 @@ impl IntoIterator for AnnSet {
 
 impl<'a> IntoIterator for &'a AnnSet {
     type Item = &'a Ann;
-    type IntoIter = Values<'a, String, Ann>;
+    type IntoIter = Values<'a, SmolStr, Ann>;
 
     // TODO: O(capacity)
     fn into_iter(self) -> Self::IntoIter {

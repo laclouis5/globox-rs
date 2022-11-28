@@ -84,7 +84,7 @@ impl Ann {
         conf_last: bool,
     ) -> Result<(), ConvError> {
         let mut path = path.as_ref().to_path_buf();
-        path.push(&self.img_id);
+        path.push(self.img_id.as_str());
         path.set_extension("txt");
 
         let contents = self.to_txt(fmt, conf_last);
@@ -99,7 +99,7 @@ impl Ann {
         conf_last: bool,
     ) -> Result<(), ConvError> {
         let mut path = path.as_ref().to_path_buf();
-        path.push(&self.img_id);
+        path.push(self.img_id.as_str());
         path.set_extension("txt");
 
         let contents = self.to_txt_rel(fmt, conf_last)?;

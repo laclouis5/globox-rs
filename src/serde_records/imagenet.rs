@@ -2,6 +2,8 @@ use crate::imgsize::ImgSize;
 
 use serde::{Serialize, Deserialize};
 
+use smol_str::SmolStr;
+
 #[derive(Serialize, Deserialize)]
 pub(crate) struct INetBndBox {
     pub(crate) xmin: f32, 
@@ -30,14 +32,14 @@ impl From<InetSize> for ImgSize {
 
 #[derive(Serialize, Deserialize)]
 pub(crate) struct InetObj {
-    pub(crate) name: String, 
+    pub(crate) name: SmolStr, 
     pub(crate) bndbox: INetBndBox,
 }
 
 
 #[derive(Serialize, Deserialize)]
 pub(crate) struct InetAnn {
-    pub(crate) filename: String, 
+    pub(crate) filename: SmolStr, 
     pub(crate) size: InetSize, 
 
     #[serde(rename = "object")]

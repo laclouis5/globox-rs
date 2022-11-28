@@ -1,16 +1,18 @@
 use serde::{Serialize, Deserialize};
 
+use smol_str::SmolStr;
+
 #[derive(Serialize, Deserialize)]
 pub(crate) struct LMShape {
-    pub(crate) label: String,
+    pub(crate) label: SmolStr,
     pub(crate) points: Vec<Vec<f32>>,
-    pub(crate) shape_type: String,
+    pub(crate) shape_type: SmolStr,
 }
 
 #[derive(Serialize, Deserialize)]
 pub(crate) struct LMAnn {
     #[serde(rename = "imagePath")]
-    pub(crate) image_path: String,
+    pub(crate) image_path: SmolStr,
 
     #[serde(rename = "imageWidth")]
     pub(crate) image_width: u32,

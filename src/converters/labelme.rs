@@ -14,6 +14,8 @@ use std::{
 
 use serde_json::to_string;
 
+use smol_str::SmolStr;
+
 impl From<&BBox> for LMShape {
     fn from(bbox: &BBox) -> Self {
         let (xmin, ymin, xmax, ymax) = bbox.ltrb();
@@ -21,7 +23,7 @@ impl From<&BBox> for LMShape {
         LMShape { 
             label: bbox.label.clone(), 
             points: vec![vec![xmin, ymin], vec![xmax, ymax]], 
-            shape_type: String::from("rectangle"), 
+            shape_type: SmolStr::new_inline("rectangle"), 
         }
     }
 }
@@ -56,7 +58,7 @@ impl Ann {
     /// Save the annotation to Labelme annotation format.
     pub fn save_labelme<P: AsRef<Path>>(&self, path: P) -> Result<(), ConvError> {
         let mut path = path.as_ref().to_path_buf();
-        path.push(&self.img_id);
+        path.push(self.img_id.as_str());
         path.set_extension("json");
 
         let contents = self.to_labelme()?;

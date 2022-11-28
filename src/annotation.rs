@@ -1,6 +1,8 @@
 use crate::imgsize::ImgSize;
 use crate::bbox::BBox;
 
+use smol_str::SmolStr;
+
 /// A collection of bounding box annotations for a single image.
 #[derive(Debug, Clone)]
 pub struct Ann {
@@ -8,7 +10,7 @@ pub struct Ann {
     /// 
     /// This identifier must be unique and is generally the image name
     /// such as `the_image.jpg`.
-    pub img_id: String,
+    pub img_id: SmolStr,
 
     /// The image size.
     pub img_size: Option<ImgSize>,
@@ -19,12 +21,12 @@ pub struct Ann {
 
 impl Ann {
     /// Creates an annotation with the given bounding boxes.
-    pub fn new<S: Into<String>>(img_id: S, img_size: Option<ImgSize>, bboxes: Vec<BBox>) -> Self {
+    pub fn new<S: Into<SmolStr>>(img_id: S, img_size: Option<ImgSize>, bboxes: Vec<BBox>) -> Self {
         Ann {img_id: img_id.into(), img_size, bboxes }
     }
 
     /// Creates an empty annotation without bounding boxes.
-    pub fn empty<S: Into<String>>(img_id: S) -> Self {
+    pub fn empty<S: Into<SmolStr>>(img_id: S) -> Self {
         Ann::new(img_id, None, vec![])
     }
 }

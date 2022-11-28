@@ -65,7 +65,7 @@ impl AnnSet {
             
             if let [l, t, w, h] = coco_ann.bbox[..] {
                 let bbox = BBox::create(
-                    String::from(*label), 
+                    (*label).clone(), 
                     (l, t, w, h),
                     BBoxFmt::LTWH,
                     coco_ann.conf,
