@@ -99,17 +99,31 @@ impl BBox {
 }
 
 impl BBox {
+    /// The bounding box top-left corner X coordinate.
     pub fn xmin(&self) -> f32 { self.xmin }
+
+    /// The bounding box top-left corner Y coordinate.
     pub fn ymin(&self) -> f32 { self.ymin }
+
+    /// The bounding box bottom-right corner X coordinate.
     pub fn xmax(&self) -> f32 { self.xmax }
+
+    /// The bounding box bottom-right corner Y coordinate.
     pub fn ymax(&self) -> f32 { self.ymax }
 
+    /// The bounding box center X coordinate.
     pub fn xmid(&self) -> f32 { (self.xmax + self.xmin) / 2.0 }
+
+    /// The bounding box center X coordinate.
     pub fn ymid(&self) -> f32 { (self.ymax + self.ymin) / 2.0 }
 
+    /// The bounding box width.
     pub fn width(&self) -> f32 { self.xmax - self.xmin }
+
+    /// The bounding box height.
     pub fn height(&self) -> f32 { self.ymax - self.ymin }
 
+    /// The bounding box confidence score.
     pub fn conf(&self) -> Option<f32> { self.conf }
 
     /// Sets the bounding box confidence score.
