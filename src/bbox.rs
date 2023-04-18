@@ -199,25 +199,147 @@ impl BBox {
     }
 }
 
+impl BBox {
+    pub fn is_ground_truth(&self) -> bool {
+        self.conf.is_none()
+    }
+
+    pub fn is_detection(&self) -> bool {
+        self.conf.is_some()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::bbox::*;
 
     #[test]
-    fn test_creation() {
-        let b = BBox::new("label", 10.0, 20.0, 30.0, 40.0, Some(0.25));
-        
-        assert_eq!(b.xmin(), 10.0);
-        assert_eq!(b.ymin(), 20.0);
-        assert_eq!(b.xmax(), 30.0);
-        assert_eq!(b.ymax(), 40.0);
-
-        assert_eq!(b.xmid(), 20.0);
-        assert_eq!(b.ymid(), 30.0);
-
-        assert_eq!(b.width(), 20.0);
-        assert_eq!(b.height(), 20.0);
-
-        assert_eq!(b.conf(), Some(0.25));
+    #[should_panic]
+    fn xmax_lt_xmin() {
+        let _bbox = BBox::new("", 10.0, 10.0, 5.0, 10.0, None);
     }
+
+    #[test]
+    #[should_panic]
+    fn ymax_lt_ymin() {
+        let _bbox = BBox::new("", 10.0, 10.0, 15.0, 9.0, None);
+    }
+
+    #[test]
+    #[should_panic]
+    fn neg_conf() {
+        let _bbox = BBox::new("", 0.0, 0.0, 0.0, 0.0, Some(-0.1));
+    }
+
+    #[test]
+    #[should_panic]
+    fn conf_gt_one() {
+        let _bbox = BBox::new("", 0.0, 0.0, 0.0, 0.0, Some(1.1));
+    }
+
+    #[test]
+    fn accessors() {
+        let bbox = BBox::new("", -1.0, 0.0, 1.0, 2.0, None);
+
+        assert!(bbox.xmin() == -1.0);
+        assert!(bbox.ymin() == 0.0);
+        assert!(bbox.xmax() == 1.0);
+        assert!(bbox.ymax() == 2.0);
+
+        assert!(bbox.xmid() == 0.0);
+        assert!(bbox.ymid() == 1.0);
+
+        assert!(bbox.width() == 2.0);
+        assert!(bbox.height() == 2.0);
+
+        assert!(bbox.conf.is_none());
+
+        assert!(bbox.area() == 4.0); 
+
+        assert!(bbox.is_ground_truth());
+        assert!(!bbox.is_detection());
+
+        assert!(bbox.ltrb() == (-1.0, 0.0, 1.0, 2.0));
+        assert!(bbox.ltwh() == (-1.0, 0.0, 2.0, 2.0));
+        assert!(bbox.xywh() == (0.0, 1.0, 2.0, 2.0));
+
+        assert!(bbox.coords(BBoxFmt::LTRB) == bbox.ltrb());
+        assert!(bbox.coords(BBoxFmt::LTWH) == bbox.ltwh());
+        assert!(bbox.coords(BBoxFmt::XYWH) == bbox.xywh());
+    }
+
+    #[test]
+    fn set_conf() {
+        let mut bbox = BBox::new("", 0.0, 0.0, 0.0, 0.0, None);
+        assert!(bbox.conf().is_none());
+
+        bbox.set_conf(0.25);
+        assert!(bbox.conf() == Some(0.25));
+    }
+
+    #[test]
+    #[should_panic]
+    fn set_invalid_neg_conf() {
+        let mut bbox = BBox::new("", 0.0, 0.0, 0.0, 0.0, None);
+
+        bbox.set_conf(-0.1);
+    }
+
+    #[test]
+    #[should_panic]
+    fn set_invalid_gt_one_conf() {
+        let mut bbox = BBox::new("", 0.0, 0.0, 0.0, 0.0, None);
+
+        bbox.set_conf(1.1);
+    }
+
+    #[test]
+    fn create_rel_ltrb() {
+        let bbox = BBox::create_rel("", (0.0, 0.0, 0.75, 1.0), BBoxFmt::LTRB, None, ImgSize::new(100, 200));
+
+        assert!(bbox.xmin() == 0.0);
+        assert!(bbox.ymin() == 0.0);
+        assert!(bbox.xmax() == 75.0);
+        assert!(bbox.ymax() == 200.0);
+        assert!(bbox.xmid() == 37.5);
+        assert!(bbox.ymid() == 100.0);
+        assert!(bbox.width() == 75.0);
+        assert!(bbox.height() == 200.0);
+    }
+
+    #[test]
+    fn create_rel_ltwh() {
+        let bbox = BBox::create_rel("", (0.0, 0.0, 0.5, 1.0), BBoxFmt::LTWH, None, ImgSize::new(100, 200));
+
+        assert!(bbox.xmin() == 0.0);
+        assert!(bbox.ymin() == 0.0);
+        assert!(bbox.xmax() == 50.0);
+        assert!(bbox.ymax() == 200.0);
+        assert!(bbox.xmid() == 25.0);
+        assert!(bbox.ymid() == 100.0);
+        assert!(bbox.width() == 50.0);
+        assert!(bbox.height() == 200.0);
+    }
+
+    #[test]
+    fn create_rel_xywh() {
+        let bbox = BBox::create_rel("", (0.5, 0.5, 0.5, 1.0), BBoxFmt::XYWH, None, ImgSize::new(100, 200));
+
+        assert!(bbox.xmin() == 25.0);
+        assert!(bbox.ymin() == 0.0);
+        assert!(bbox.xmax() == 75.0);
+        assert!(bbox.ymax() == 200.0);
+        assert!(bbox.xmid() == 50.0);
+        assert!(bbox.ymid() == 100.0);
+        assert!(bbox.width() == 50.0);
+        assert!(bbox.height() == 200.0);
+    }
+
+    // #[test]
+    // fn iou() {
+    //     let bbox1 = BBox::new("", 0.0, 0.0, 10.0, 10.0, None);
+    //     let bbox2 = BBox::new("", 5.0, 0.0, 10.0, 10.0, None);
+
+    //     // assert!(bbox1.iou)
+    // }
 }
