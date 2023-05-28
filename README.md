@@ -1,7 +1,9 @@
 # Globox
-Based on https://github.com/laclouis5/globox. Work in progress.
 
-# TODO
+Based on <https://github.com/laclouis5/globox>. Work in progress.
+
+## TODO
+
 - [x] Base data structures
 - [x] Parsers
 - [x] Publish crate
